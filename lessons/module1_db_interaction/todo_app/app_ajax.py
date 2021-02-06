@@ -20,7 +20,7 @@ db.create_all()
 
 @app.route('/todos/create', methods=['POST'])
 def create_todo():
-  description = request.form.get_json()['description']
+  description = request.get_json()['description']
   todo = Todo(description=description)
   db.session.add(todo)
   db.session.commit()
@@ -31,4 +31,4 @@ def create_todo():
 
 @app.route('/')
 def index():
-  return render_template('index.html', data=Todo.query.all())
+  return render_template('index_ajax.html', data=Todo.query.all())
