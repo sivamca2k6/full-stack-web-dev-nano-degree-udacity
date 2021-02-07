@@ -16,7 +16,7 @@
     <ul id="todos">
       <li>test</li>
       {% for d in data %}
-      <li>{{ d.description }}</li>
+      <li>{{ d.description }} [Completed : {{d.completed}}]</li>
       {% endfor %}
     </ul>
     <script>
@@ -38,7 +38,7 @@
         .then(jsonResponse => {
           console.log('response', jsonResponse);
           li = document.createElement('li');
-          li.innerText = desc;
+          li.innerText = jsonResponse['description'];
           document.getElementById('todos').appendChild(li);
           document.getElementById('error').className = 'hidden';
         })
