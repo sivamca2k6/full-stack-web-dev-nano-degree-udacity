@@ -1,7 +1,11 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <title>Todo App</title>
-    <style>
+
+    <link href='http://fonts.googleapis.com/css?family=Sintony:400,700' rel='stylesheet' type='text/css'>
+
+    <style type="text/css">    
       .hidden {
         display: none;
       }
@@ -53,17 +57,44 @@
         <li>
           <input class="check-completed" data-id="{{ todo.id }}" type="checkbox" {% if todo.completed %} checked {% endif %} />
           {{ todo.description }}
+          <button  class="check-deleted" data-id="{{ todo.id }}">&cross;</button>
         </li>
         {% endfor %}
       </ul>
     </div>
     <script>
+      const delete_buttons = document.querySelectorAll('.check-deleted');
+      
+      for(let i=0;i<delete_buttons.length;i++){
+        const btn =  delete_buttons[i];
+        btn.onclick = function(e){
+          const todoId = e.target.dataset['id'];
+          console.log(todoId) // debug
+          fetch('/delete_todos/' + todoId , {
+            method: 'DELETE'
+          })
+          .then(function(response) {
+            if (!response.ok) {
+                console.log("Error", response);
+            } else {
+                console.log("Success", response);
+                // this is kind-of silly, but should help you achieve what you want
+                // location.reload()
+            }
+          })
+        }
+      }
+
+
       const checkboxes = document.querySelectorAll('.check-completed');
       for (let i = 0; i < checkboxes.length; i++) {
         const checkbox = checkboxes[i];
+        
         checkbox.onchange = function(e) {
+          
           const newCompleted = e.target.checked;
           const todoId = e.target.dataset['id'];
+
           fetch('/todos/' + todoId + '/update_completed', {
             method: 'POST',
             body: JSON.stringify({

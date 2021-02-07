@@ -38,7 +38,6 @@ def create_todo():#route handler
 def update_completed_todo(todo_id):
   try:
     completed = request.get_json()['completed']
-    print('completed', completed)
     todo = Todo.query.get(todo_id)
     todo.completed = completed
     db.session.commit()
@@ -48,7 +47,21 @@ def update_completed_todo(todo_id):
     db.session.close()
   return redirect(url_for('crud_index'))
 
+@app.route('/delete_todos/<todo_id>', methods=['DELETE'])
+def delete_todo(todo_id):
+  try:
+    Todo.query.filter_by(id=todo_id).delete()
+    #todo = Todo.query.get(todo_id) ALTERNATE WAY
+    #db.session.delete(todo)
+    db.session.commit()
+  except:
+    db.session.rollback()
+  finally:
+    db.session.close()
+  return jsonify({ 'success': True })
+  
 
 @app.route('/')
 def crud_index():
+  print("re")
   return render_template('crud_index.html', todos=Todo.query.order_by('id').all())
