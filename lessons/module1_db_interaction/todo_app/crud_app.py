@@ -3,6 +3,7 @@ from flask.helpers import url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost:5432/ToDo'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -15,9 +16,16 @@ class Todo(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   description = db.Column(db.String(), nullable=False)
   completed = db.Column(db.Boolean, nullable=False, default=False)
+  list_id =db.Column(db.Integer, db.ForeignKey('todolists.id'),nullable=False)
 
   def __repr__(self):
     return f'<Todo {self.id} {self.description}>'
+
+class ToDoList(db.Model):
+  __tablename__='todolists'
+  id = db.Column(db.Integer, primary_key=True)
+  listname = db.Column(db.String(), nullable=False)
+  todos = db.relationship('Todo',backref='todo_list',lazy = True)
 
 #db.create_all()
 
@@ -60,7 +68,6 @@ def delete_todo(todo_id):
     db.session.close()
   return jsonify({ 'success': True })
   
-
 @app.route('/')
 def crud_index():
   print("re")
