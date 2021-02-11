@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="60">
     <title>Todo App</title>
-
-    <link href='http://fonts.googleapis.com/css?family=Sintony:400,700' rel='stylesheet' type='text/css'>
-
     <style type="text/css">    
       .hidden {
         display: none;
+      }
+      h1 {
+        text-shadow: 2px 2px 5px red;
       }
       ul {
         list-style: none;
@@ -28,20 +28,26 @@
         cursor: pointer;
         font-size: 20px;
       }
+      
       .lists-wrapper, .todos-wrapper {
         display: inline-block;
         vertical-align: top;
+        width: 350px;
+        border: 15px solid gray;
+        padding: 50px;
+        margin: 20px;
       }
     </style>
   </head>
   <body>
     <h1 style="text-align:justify;color:blue"> TODO APP</h6>
-      <div id="error" class="hidden" style="color: red;">Something went wrong!</div>
+    <div id="error" class="hidden" style="color: red;">Something went wrong!</div>
     <div class="lists-wrapper">
       <h4>LISTS</h4>
-      <form id="list_form">
+      <form id="list_form" action="/todo_list/create" method="POST">
+        <label for="todolist">List Name:</label>
         <input type="text" id="list_desc"  />
-        <input type="submit" value="Create list" />
+        <input type="submit" value="Create" />
       </form>
       <ul id="todo_lists">
         {% for list in todolists %}
@@ -59,8 +65,10 @@
     </div>
     <div class="todos-wrapper">
       <h4>Current List - [{{selected_list_name}}] - TODO's</h4>
-      <input type="hidden" id="selected_list_id" value="{{ selected_list_id }}" />
+      
       <form id="form">
+        <input type="hidden" id="selected_list_id" value="{{ selected_list_id }}" />
+        <label for="description">Create Task:</label>
         <input type="text" id="description" name="description" />
         <input type="submit" value="Create" />
       </form>
@@ -79,20 +87,23 @@
       const delete_buttons = document.querySelectorAll('.check-deleted');
       for(let i=0;i<delete_buttons.length;i++){
         const btn =  delete_buttons[i];
+
         btn.onclick = function(e){
           const todoId = e.target.dataset['id'];
-          console.log(todoId) // debug
+          console.log("Delete event: ", e);
+
           fetch('/delete_todos/' + todoId , {
             method: 'DELETE'
           })
-          .then(function(response) {
-            if (!response.ok) {
-                console.log("Error", response);
-            } else {
-                console.log("Success", response);
-                // this is kind-of silly, but should help you achieve what you want
-                // location.reload()
-            }
+          .then(function() {
+            console.log('Parent?', e.target);
+            const parent_item = e.target.parentElement; // get button of check
+            parent_item.remove(); // remove from UI
+            document.getElementById("error").className = "hidden";
+          })
+          .catch(function (e) {
+            console.error(e);
+            document.getElementById("error").className = "";
           })
         }
       }
@@ -146,15 +157,15 @@
           const liItem = document.createElement('LI');
           liItem.innerHTML = jsonResponse['description'];
           document.getElementById('todos').appendChild(liItem); 
-          //todo : check box here at list
           document.getElementById('error').className = 'hidden';
+          window.location.reload(true); // instead of this need to build html with check box and delete button
         })
         .catch(function() {
           document.getElementById('error').className = '';
         })
       }
       
-      //list submit
+      //list submit 
       document.getElementById('list_form').onsubmit = function(e) {
         e.preventDefault();
         fetch('/todo_list/create', {
@@ -171,11 +182,12 @@
         })
         .then(function(jsonResponse) {
           
-          const liItem = document.createElement('LI');
-          liItem.innerHTML = jsonResponse['description'];
-          document.getElementById('todo_lists').appendChild(liItem); 
-          //todo : check box here at list
+          
+          //const liItem = document.createElement('LI');
+          //liItem.innerHTML = jsonResponse['description'];
+          //document.getElementById('todo_lists').appendChild(liItem); 
           document.getElementById('error').className = 'hidden';
+          window.location.reload(true); // NO need to add below statement this refersh will load all data from db.
         })
         .catch(function() {
           document.getElementById('error').className = '';
@@ -188,48 +200,32 @@
         
         checkbox.onchange = function(e) {
           
-          const newCompleted = e.target.checked;
+          const checked_list = e.target.checked;
           const todolistId = e.target.dataset['id'];
           console.log(todolistId)
 
           fetch('/todo_list/' + todolistId + '/update_completed', {
             method: 'POST',
             body: JSON.stringify({
-              'completed': newCompleted
+              'completed': checked_list
             }),
             headers: {
               'Content-Type': 'application/json'
             }
           })
-          .then(function() {
+          .then(function(jsonResponse) {
             document.getElementById('error').className = 'hidden';
+
+            const todoCheckboxes = document.querySelectorAll('.check-completed');
+            for (let index = 0; index < todoCheckboxes.length; index++) {
+              const todocheck = todoCheckboxes[index];
+              todocheck.checked = checked_list;
+            }
+
           })
           .catch(function() {
             document.getElementById('error').className = '';
           })
-          // .then(function(response) {
-          //   return response.json();
-          // })
-          // .then(function(response) {
-            
-          //   // const url = response['redirect'];
-          //   // console.log(url);
-   
-          //   // fetch('http://127.0.0.1:5000/lists/1', {  
-          //   //   method: 'GET',
-          //   //   headers : { 
-          //   //     'Content-Type': 'application/json',
-          //   //     'Accept': 'application/json'}
-          //   //   })
-          //   //   .then(response => response.json())
-          //   //   .then(repos => { console.log(repos); })
-          //   // .catch(err => console.log(err));
-
-          //   document.getElementById('error').className = 'hidden';
-          // })
-          // .catch(function() {
-          //   document.getElementById('error').className = '';
-          // })
         }
       }
       
@@ -243,14 +239,15 @@
             method: 'DELETE'
           })
           .then(function(response) {
-            if (!response.ok) {
-                console.log("Error", response);
-            } else {
-                console.log("Success", response);
-                // this is kind-of silly, but should help you achieve what you want
-                 //location.reload()
-            }
+           const item = e.target.parentElement;
+           item.remove();
+           document.getElementById("error").className = "hidden";
+           window.location.reload(true); // call this to refesh page ... all child items also removed since it removed from db.
           })
+          .catch(function(e){
+            console.error(e);
+            document.getElementById("error").className="";
+          });
         }
       }
       
