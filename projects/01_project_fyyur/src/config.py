@@ -1,3 +1,4 @@
+from operator import truediv
 import os
 SECRET_KEY = os.urandom(32)
 # Grabs the folder where the script runs.
@@ -10,4 +11,5 @@ DEBUG = True
 
 
 # TODO IMPLEMENT DATABASE URL
-SQLALCHEMY_DATABASE_URI = '<Put your local database url>'
+SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:admin@localhost:5432/FyyurDB'
+SQLALCHEMY_TRACK_MODIFICATIONS = True
