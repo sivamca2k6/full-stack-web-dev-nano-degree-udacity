@@ -9,6 +9,7 @@ import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate, current
 import logging
@@ -115,19 +116,20 @@ def venues():
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-  # seach for Hop should return "The Musical Hop".
-  # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
-  response={}
+  res = db.session.query(Venue).filter(Venue.name.contains(request.form['search_term'])).all()
+  response = { "count" : len(res),"data"  : res}
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
-  # shows the venue page with the given venue_id
-  # TODO: replace with real venue data from the venues table, using venue_id
-  data1={ }
-  data = list(filter(lambda d: d['id'] == venue_id, [data1]))[0]
-  return render_template('pages/show_venue.html', venue=data)
+  venue=Venue.query.get(venue_id)
+  # TODO
+  venue.past_shows = [] #TOD
+  venue.past_shows_count =  db.session.query(func.count(Venue.id)).scalar() # count simple
+  venue.upcoming_shows = []
+  venue.upcoming_shows_count = db.session.query(Venue.id).count() # count simple
+
+  return render_template('pages/show_venue.html', venue=venue)
 
 #  Create Venue
 #  ----------------------------------------------------------------
@@ -153,22 +155,28 @@ def create_venue_submission():
        return redirect(url_for('create_venue_submission')) # how to retain form data ??
      except ():   
        db.session.rollback() 
-       flash(TracebackType.print_exc())
+       #flash(TracebackType.print_exc())
        flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed.')
      finally :
        db.session.close() 
   else :
       flash(form.errors) # validation errror
-  return render_template('pages/home.html')
+  #return render_template('pages/home.html')
+  return redirect(url_for('venues')) # redirect to venus list page
 
-@app.route('/venues/<venue_id>', methods=['DELETE'])
+@app.route('/venues/<venue_id>', methods=['POST']) 
 def delete_venue(venue_id):
-  # TODO: Complete this endpoint for taking a venue_id, and using
-  # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
+  try:
+        venue = Venue.query.get(venue_id)
+        #db.session.delete(venue)
+        #db.session.commit()
+  except():
+        db.session.rollback()
+        flash('An error occurred. Venue ' + venue.name + ' could not be deleted.')
+  finally:
+        db.session.close()
 
-  # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
-  # clicking that button delete it from the db then redirect the user to the homepage
-  return None
+  return redirect(url_for('venues'))
 
 #  Artists
 #  ----------------------------------------------------------------

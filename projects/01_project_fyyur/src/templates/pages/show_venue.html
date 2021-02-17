@@ -2,14 +2,19 @@
 {% block title %}Venue Search{% endblock %}
 {% block content %}
 <div class="row">
+	
 	<div class="col-sm-6">
+		<form method="POST" action="{{ url_for('delete_venue', venue_id=venue.id) }}"> 
+			<input type="hidden" name="_method" value="POST" />
+     		<input class="check-list-deleted" type="submit" style="color: red;" value="&cross; Delete" />
+		</form>
 		<h1 class="monospace">
 			{{ venue.name }}
 		</h1>
 		<p class="subtitle">
 			ID: {{ venue.id }}
-		</p>
-		<div class="genres">
+		</p> 
+		<div class="genres"> 
 			{% for genre in venue.genres %}
 			<span class="genre">{{ genre }}</span>
 			{% endfor %}
