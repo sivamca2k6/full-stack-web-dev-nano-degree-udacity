@@ -3,11 +3,13 @@
 #----------------------------------------------------------------------------#
 
 import json
+from types import TracebackType
 import dateutil.parser
 import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate, current
 import logging
 from logging import Formatter, FileHandler
@@ -49,6 +51,7 @@ class Venue(db.Model):
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    website = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean)
     seeking_description = db.Column(db.String(240))
     artists = db.relationship('Artist', secondary = 'Shows') # can use back ref = venues
@@ -56,7 +59,7 @@ class Venue(db.Model):
 class Artist(db.Model):
     __tablename__ = 'Artist'
     __table_args__ = (db.UniqueConstraint('name'),)
-    
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String,nullable=False)
     city = db.Column(db.String(120))
@@ -65,6 +68,7 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    website = db.Column(db.String(120))
     seeking_venue = db.Column(db.Boolean)
     seeking_description = db.Column(db.String(240))
     venues = db.relationship('Venue', secondary = 'Shows')  # can use back ref = artists
@@ -97,10 +101,17 @@ def index():
 
 @app.route('/venues')
 def venues():
-  # TODO: replace with real venues data.
-  #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data=[]
-  return render_template('pages/venues.html', areas=data)
+  res_grpby= (db.session.query(Venue.city,Venue.state).group_by(Venue.city,Venue.state)).all()  #group by city,state
+  data = [dict(zip(row.keys(), row)) for row in res_grpby]  #convert tuple result to dic 
+  
+  for area in data : # build venue data list 
+    venues = Venue.query.filter(Venue.city == area['city']).all() # filter all venues for this city
+    area['venues'] = [ row.__dict__ for row in venues] #best way to convert row model obj into dic
+    for venue in area['venues'] : # add num_upcoming_shows data
+       venue['num_upcoming_shows'] = 0 #TODO query shows table # add html placeholder.
+       venue['num_past_shows'] = 0
+
+  return render_template('pages/venues.html', areas=data) 
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
@@ -122,20 +133,32 @@ def show_venue(venue_id):
 #  ----------------------------------------------------------------
 
 @app.route('/venues/create', methods=['GET'])
-def create_venue_form():
-  form = VenueForm()
+def create_venue_form(): # this is get called when new venue create url requested(empty form) 
+  form = VenueForm() 
   return render_template('forms/new_venue.html', form=form)
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-  # TODO: insert form data as a new Venue record in the db, instead
-  # TODO: modify data to be the data object returned from db insertion
-
-  # on successful db insert, flash success
-  flash('Venue ' + request.form['name'] + ' was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+  form = VenueForm(request.form) # populate local form object with form field values
+  if form.validate():
+     try :
+       venue = Venue()
+       form.populate_obj(venue) # populate values of form fields into model object
+       db.session.add(venue)
+       db.session.commit()
+       flash('Venue ' + venue.name + ' was successfully listed!') # on successful db insert, flash success
+     except IntegrityError: # handle unique constraint by c
+       db.session.rollback()
+       flash(request.form['name'] + ' already listed.')
+       return redirect(url_for('create_venue_submission')) # how to retain form data ??
+     except ():   
+       db.session.rollback() 
+       flash(TracebackType.print_exc())
+       flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed.')
+     finally :
+       db.session.close() 
+  else :
+      flash(form.errors) # validation errror
   return render_template('pages/home.html')
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
