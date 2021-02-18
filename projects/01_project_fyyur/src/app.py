@@ -46,10 +46,11 @@ class Venue(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String,nullable=False)
-    city = db.Column(db.String(120))
+    city = db.Column(db.String(120)) 
     state = db.Column(db.String(120))
     address = db.Column(db.String(120))
     phone = db.Column(db.String(120))
+    genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     website = db.Column(db.String(120))
@@ -123,11 +124,11 @@ def search_venues():
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
   venue=Venue.query.get(venue_id)
-  # TODO
-  venue.past_shows = [] #TOD
-  venue.past_shows_count =  db.session.query(func.count(Venue.id)).scalar() # count simple
-  venue.upcoming_shows = []
-  venue.upcoming_shows_count = db.session.query(Venue.id).count() # count simple
+  
+  venue.past_shows = [] # TOD0
+  venue.past_shows_count =  0 # TOD0
+  venue.upcoming_shows = [] # TOD0
+  venue.upcoming_shows_count = 0 # TOD0
 
   return render_template('pages/show_venue.html', venue=venue)
 
@@ -168,8 +169,8 @@ def create_venue_submission():
 def delete_venue(venue_id):
   try:
         venue = Venue.query.get(venue_id)
-        #db.session.delete(venue)
-        #db.session.commit()
+        db.session.delete(venue)
+        db.session.commit()
   except():
         db.session.rollback()
         flash('An error occurred. Venue ' + venue.name + ' could not be deleted.')
@@ -178,29 +179,41 @@ def delete_venue(venue_id):
 
   return redirect(url_for('venues'))
 
+@app.route('/venues/<int:venue_id>/edit', methods=['GET'])
+def edit_venue(venue_id):
+  form = VenueForm()
+  venue={ }
+  # TODO: populate form with values from venue with ID <venue_id>
+  return render_template('forms/edit_venue.html', form=form, venue=venue)
+
+@app.route('/venues/<int:venue_id>/edit', methods=['POST'])
+def edit_venue_submission(venue_id):
+  # TODO: take values from the form submitted, and update existing
+  # venue record with ID <venue_id> using the new attributes
+  return redirect(url_for('show_venue', venue_id=venue_id))
+
 #  Artists
 #  ----------------------------------------------------------------
 @app.route('/artists')
 def artists():
   # TODO: replace with real data returned from querying the database
-  data=[]
+  data=  Artist.query.all()
   return render_template('pages/artists.html', artists=data)
 
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-  # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
-  # search for "band" should return "The Wild Sax Band".
-  response={ }
+  res = db.session.query(Artist).filter(Artist.name.contains(request.form['search_term'])).all()
+  response = { "count" : len(res),"data"  : res}
   return render_template('pages/search_artists.html', results=response, search_term=request.form.get('search_term', ''))
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
-  # shows the venue page with the given venue_id
-  # TODO: replace with real venue data from the venues table, using venue_id
-  data1={}
-  data = list(filter(lambda d: d['id'] == artist_id, [data1]))[0]
-  return render_template('pages/show_artist.html', artist=data)
+  artist = Artist.query.get(artist_id)
+  artist.past_shows = [] # TOD0
+  artist.past_shows_count =  0 # TOD0
+  artist.upcoming_shows = [] # TOD0
+  artist.upcoming_shows_count = 0 # TOD
+  return render_template('pages/show_artist.html', artist=artist)
 
 #  Update
 #  ----------------------------------------------------------------
@@ -218,19 +231,6 @@ def edit_artist_submission(artist_id):
 
   return redirect(url_for('show_artist', artist_id=artist_id))
 
-@app.route('/venues/<int:venue_id>/edit', methods=['GET'])
-def edit_venue(venue_id):
-  form = VenueForm()
-  venue={ }
-  # TODO: populate form with values from venue with ID <venue_id>
-  return render_template('forms/edit_venue.html', form=form, venue=venue)
-
-@app.route('/venues/<int:venue_id>/edit', methods=['POST'])
-def edit_venue_submission(venue_id):
-  # TODO: take values from the form submitted, and update existing
-  # venue record with ID <venue_id> using the new attributes
-  return redirect(url_for('show_venue', venue_id=venue_id))
-
 #  Create Artist
 #  ----------------------------------------------------------------
 
@@ -241,15 +241,29 @@ def create_artist_form():
 
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
-  # called upon submitting the new artist listing form
-  # TODO: insert form data as a new Venue record in the db, instead
-  # TODO: modify data to be the data object returned from db insertion
-
-  # on successful db insert, flash success
-  flash('Artist ' + request.form['name'] + ' was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+  form = ArtistForm(request.form) # populate local form object with form field values
+  if form.validate():
+     try :
+       artist = Artist()
+       form.populate_obj(artist) # populate values of form fields into model object
+       db.session.add(artist)
+       db.session.commit()
+       flash('Artist ' + artist.name + ' was successfully listed!') # on successful db insert, flash success
+     except IntegrityError: # handle unique constraint by c
+       db.session.rollback()
+       flash(request.form['name'] + ' already listed.')
+       return redirect(url_for('create_artist_submission')) # how to retain form data ??
+     except ():   
+       db.session.rollback() 
+       #flash(TracebackType.print_exc())
+       flash('An error occurred. Artist ' + request.form['name'] + ' could not be listed.')
+     finally :
+       db.session.close() 
+  else :
+      flash(form.errors) # validation errror
+      return redirect(url_for('create_artist_submission'))
   return render_template('pages/home.html')
+  
 
 
 #  Shows
