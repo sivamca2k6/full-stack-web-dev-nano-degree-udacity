@@ -182,14 +182,30 @@ def delete_venue(venue_id):
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
   form = VenueForm()
-  venue={ }
-  # TODO: populate form with values from venue with ID <venue_id>
+  venue = Venue.query.get(venue_id)
+  # Pre Fill form with data for loading
+  form.name.data = venue.name
+  form.city.data = venue.city
+  form.state.data = venue.state
+  form.address.data = venue.address
+  form.phone.data = venue.phone
+  form.genres.data = venue.genres
+  form.facebook_link.data = venue.facebook_link
   return render_template('forms/edit_venue.html', form=form, venue=venue)
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
-  # TODO: take values from the form submitted, and update existing
-  # venue record with ID <venue_id> using the new attributes
+  venue = Venue.query.get(venue_id) # while submit use this id get venue obj
+  venue.name = request.form['name']
+  venue.city = request.form['city']
+  venue.state = request.form['state']
+  venue.address = request.form['address']
+  venue.phone = request.form['phone']
+  venue.genres = request.form.getlist('genres')
+  venue.facebook_link = request.form['facebook_link']
+  db.session.add(venue)
+  db.session.commit()
+  db.session.close()
   return redirect(url_for('show_venue', venue_id=venue_id))
 
 #  Artists
@@ -213,6 +229,7 @@ def show_artist(artist_id):
   artist.past_shows_count =  0 # TOD0
   artist.upcoming_shows = [] # TOD0
   artist.upcoming_shows_count = 0 # TOD
+  #artist.genres = convert comma separate values into list
   return render_template('pages/show_artist.html', artist=artist)
 
 #  Update
@@ -220,14 +237,27 @@ def show_artist(artist_id):
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
   form = ArtistForm()
-  artist={ }
-  # TODO: populate form with fields from artist with ID <artist_id>
+  artist = Artist.query.get(artist_id)
+  form.name.data = artist.name
+  form.city.data = artist.city
+  form.state.data = artist.state
+  form.phone.data = artist.phone
+  form.genres.data = artist.genres
+  form.facebook_link.data = artist.facebook_link
   return render_template('forms/edit_artist.html', form=form, artist=artist)
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
-  # TODO: take values from the form submitted, and update existing
-  # artist record with ID <artist_id> using the new attributes
+  artist = Artist.query.get(artist_id)
+  artist.name = request.form['name']
+  artist.city = request.form['city']
+  artist.state = request.form['state']
+  artist.phone = request.form['phone']
+  artist.genres = request.form.getlist('genres')
+  artist.facebook_link = request.form['facebook_link']
+  db.session.add(artist)
+  db.session.commit()
+  db.session.close()
 
   return redirect(url_for('show_artist', artist_id=artist_id))
 
@@ -258,7 +288,7 @@ def create_artist_submission():
        #flash(TracebackType.print_exc())
        flash('An error occurred. Artist ' + request.form['name'] + ' could not be listed.')
      finally :
-       db.session.close() 
+       db.session.close()  
   else :
       flash(form.errors) # validation errror
       return redirect(url_for('create_artist_submission'))
