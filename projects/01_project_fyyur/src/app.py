@@ -23,7 +23,7 @@ app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
-
+ 
 migrate = Migrate(app,db)
 
 # TODO: connect to a local postgresql database
@@ -34,12 +34,14 @@ migrate = Migrate(app,db)
 
 class Shows(db.Model):
     __tablename__ = 'Shows'
-    id = db.Column(db.Integer, primary_key=True)
-    venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), primary_key=True)
-    artist_id  = db.Column(db.Integer, db.ForeignKey('Artist.id'), primary_key=True)
-    start_time = db.Column(db.DateTime,nullable=False, primary_key=True)
+    __table_args__ = (db.UniqueConstraint('venue_id', 'artist_id','start_time', name='unique_constraint_11'), )
 
-
+    id = db.Column(db.Integer, primary_key=True,autoincrement=True)
+    venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'),nullable=False)
+    artist_id  = db.Column(db.Integer, db.ForeignKey('Artist.id'),nullable=False)
+    start_time = db.Column(db.DateTime,nullable=False)
+  
+  
 class Venue(db.Model):
     __tablename__ = 'Venue'
     __table_args__ = (db.UniqueConstraint('name'),)
@@ -235,7 +237,7 @@ def show_artist(artist_id):
 #  Update
 #  ----------------------------------------------------------------
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
-def edit_artist(artist_id):
+def edit_artist(artist_id): 
   form = ArtistForm()
   artist = Artist.query.get(artist_id)
   form.name.data = artist.name
@@ -301,11 +303,16 @@ def create_artist_submission():
 
 @app.route('/shows')
 def shows():
-  # displays list of shows at /shows
-  # TODO: replace with real venues data.
-  #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data=[]
-  return render_template('pages/shows.html', shows=data)
+  data =  (db.session.query(
+    Venue.id.label("venue_id"), Venue.name.label("venue_name"),
+    Artist.id.label("artist_id"),  Artist.name.label("artist_name"),  Artist.image_link.label("artist_image_link"), 
+    Shows.start_time.label("start_time"))
+    .filter(Shows.venue_id == Venue.id)
+    .filter(Shows.artist_id == Artist.id)
+    )
+  print(data)
+  #data = Shows.query.all()
+  return render_template('pages/shows.html', shows=data) 
 
 @app.route('/shows/create')
 def create_shows():
@@ -315,18 +322,35 @@ def create_shows():
 
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
-  # called to create new shows in the db, upon submitting new show listing form
-  # TODO: insert form data as a new Show record in the db, instead
+  form = ShowForm(request.form) # populate local form object with form field values
+  if form.validate():
+     try :
+       show = Shows()
+       form.populate_obj(show) # populate values of form fields into model object
+       db.session.add(show)
+       db.session.commit()
+       flash('Show is successfully listed!') # on successful db insert, flash success
 
-  # on successful db insert, flash success
-  flash('Show was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Show could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+     except IntegrityError as e: # handle unique constraint by c
+       db.session.rollback()
+       errorInfo = e.orig.args
+       #print (errorInfo[0])
+       #print (errorInfo[1])
+       flash(errorInfo[0])
+       flash('Show already listed or enter valid artist-id venue-id and startTime. ')
+       return redirect(url_for('create_show_submission')) # how to retain form data ??
+     except ():   
+       db.session.rollback() 
+       flash('An error occurred. Show could not be listed.')
+     finally :
+       db.session.close()  
+  else :
+      flash(form.errors) # validation errror
+      return redirect(url_for('create_show_submission'))
   return render_template('pages/home.html')
 
 @app.errorhandler(404)
-def not_found_error(error):
+def not_found_error(error): 
     return render_template('errors/404.html'), 404
 
 @app.errorhandler(500)
