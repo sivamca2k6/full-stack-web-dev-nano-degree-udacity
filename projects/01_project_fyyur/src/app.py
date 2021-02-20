@@ -11,7 +11,7 @@ from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
-from flask_migrate import Migrate, current
+from flask_migrate import Migrate, current, show
 import logging
 from logging import Formatter, FileHandler
 from forms import *
@@ -25,8 +25,6 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
  
 migrate = Migrate(app,db)
-
-# TODO: connect to a local postgresql database
 
 #----------------------------------------------------------------------------#
 # Models.
@@ -90,7 +88,8 @@ def format_datetime(value, format='medium'):
       format="EE MM, dd, y h:mma"
   return babel.dates.format_datetime(date, format)
 
-app.jinja_env.filters['datetime'] = format_datetime
+app.jinja_env.filters['datetime'] = format_datetime 
+
 
 #----------------------------------------------------------------------------#
 # Controllers.
@@ -98,7 +97,9 @@ app.jinja_env.filters['datetime'] = format_datetime
 
 @app.route('/')
 def index():
-  return render_template('pages/home.html')
+  artists = db.session.query(Artist).order_by(Artist.id.desc()).limit(10).all()
+  venues = db.session.query(Venue).order_by(Venue.id.desc()).limit(10).all()
+  return render_template('pages/home.html', artists = artists,venues=venues)
 
 #  Venues
 #  ----------------------------------------------------------------
@@ -112,10 +113,20 @@ def venues():
     venues = Venue.query.filter(Venue.city == area['city']).all() # filter all venues for this city
     area['venues'] = [ row.__dict__ for row in venues] #best way to convert row model obj into dic
     for venue in area['venues'] : # add num_upcoming_shows data
-       venue['num_upcoming_shows'] = 0 #TODO query shows table # add html placeholder.
-       venue['num_past_shows'] = 0
+       print(venue['id'])
+       past_shows_q = (db.session.query(Venue.id).join(Shows ,Shows.venue_id == Venue.id).
+                                     filter(Shows.start_time < datetime.now()).
+                                     filter(Shows.venue_id ==  venue['id']))
+       print(past_shows_q)
+       venue['num_past_shows'] = len(past_shows_q.all())
 
-  return render_template('pages/venues.html', areas=data) 
+       upcoming_show_q = (db.session.query(Venue.id).join(Shows ,Shows.venue_id == Venue.id).
+                                     filter(Shows.start_time > datetime.now()).
+                                     filter(Shows.venue_id == venue['id']))
+       print(upcoming_show_q)
+       venue['num_upcoming_shows'] = len(upcoming_show_q.all())
+
+  return render_template('pages/venues.html', areas=data)   
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
@@ -123,18 +134,28 @@ def search_venues():
   response = { "count" : len(res),"data"  : res}
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
-@app.route('/venues/<int:venue_id>')
+@app.route('/venues/<int:venue_id>') 
 def show_venue(venue_id):
   venue=Venue.query.get(venue_id)
-  
-  venue.past_shows = [] # TOD0
-  venue.past_shows_count =  0 # TOD0
-  venue.upcoming_shows = [] # TOD0
-  venue.upcoming_shows_count = 0 # TOD0
+  venue.past_shows = (db.session.query(Artist.id.label('artist_id'),
+                      Artist.name.label('artist_name'),Artist.image_link.label('artist_image_link'),
+                      Shows.start_time.label('start_time')).
+                      join(Shows,Shows.artist_id == Artist.id).
+                      filter(Shows.venue_id == venue_id).
+                      filter(Shows.start_time < datetime.now())).all() # sqlalchmey not much sql friendly to generate inner join .. explored much
+  #print(venue.past_shows) #print query
+  venue.past_shows_count = len(venue.past_shows)
+  venue.upcoming_shows = (db.session.query(Artist.id.label('artist_id'),
+                      Artist.name.label('artist_name'),Artist.image_link.label('artist_image_link'),
+                      Shows.start_time.label('start_time')).
+                      join(Shows,Shows.artist_id == Artist.id).
+                      filter(Shows.venue_id == venue_id).
+                      filter(Shows.start_time > datetime.now())).all() # sqlalchmey not much sql friendly to generate inner join .. explored much  
+  venue.upcoming_shows_count =len(venue.upcoming_shows)
 
   return render_template('pages/show_venue.html', venue=venue)
-
-#  Create Venue
+  
+#  Create Venue 
 #  ----------------------------------------------------------------
 
 @app.route('/venues/create', methods=['GET'])
@@ -214,9 +235,19 @@ def edit_venue_submission(venue_id):
 #  ----------------------------------------------------------------
 @app.route('/artists')
 def artists():
-  # TODO: replace with real data returned from querying the database
-  data=  Artist.query.all()
+  data =  Artist.query.all()
+  for artist in data:
+    artist.num_past_shows =  len((db.session.query(Venue.id).
+                      join(Shows,Shows.venue_id == Venue.id).
+                      filter(Shows.artist_id == artist.id).
+                      filter(Shows.start_time < datetime.now())).all()) 
+    artist.num_upcoming_shows = len((db.session.query(Venue.id).
+                      join(Shows,Shows.venue_id == Venue.id).
+                      filter(Shows.artist_id == artist.id).
+                      filter(Shows.start_time > datetime.now())).all() )
+  
   return render_template('pages/artists.html', artists=data)
+
 
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
@@ -227,13 +258,24 @@ def search_artists():
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
   artist = Artist.query.get(artist_id)
-  artist.past_shows = [] # TOD0
-  artist.past_shows_count =  0 # TOD0
-  artist.upcoming_shows = [] # TOD0
-  artist.upcoming_shows_count = 0 # TOD
-  #artist.genres = convert comma separate values into list
+  artist.past_shows = (db.session.query(Venue.id.label('venue_id'),
+                      Venue.name.label('venue_name'),Venue.image_link.label('venue_image_link'),
+                      Shows.start_time.label('start_time')).
+                      join(Shows,Shows.venue_id == Venue.id).
+                      filter(Shows.artist_id == artist_id).
+                      filter(Shows.start_time < datetime.now())).all() 
+  #print(artist.past_shows) #print query
+  artist.past_shows_count = len(artist.past_shows)
+  artist.upcoming_shows = (db.session.query(Venue.id.label('venue_id'),
+                      Venue.name.label('venue_name'),Venue.image_link.label('venue_image_link'),
+                      Shows.start_time.label('start_time')).
+                      join(Shows,Shows.venue_id == Venue.id).
+                      filter(Shows.artist_id == artist_id).
+                      filter(Shows.start_time > datetime.now())).all() 
+  artist.upcoming_shows_count =len(artist.upcoming_shows)
+  
   return render_template('pages/show_artist.html', artist=artist)
-
+ 
 #  Update
 #  ----------------------------------------------------------------
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
@@ -310,7 +352,7 @@ def shows():
     .filter(Shows.venue_id == Venue.id)
     .filter(Shows.artist_id == Artist.id)
     )
-  print(data)
+  #print(data)
   #data = Shows.query.all()
   return render_template('pages/shows.html', shows=data) 
 
