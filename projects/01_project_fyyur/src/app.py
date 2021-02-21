@@ -2,78 +2,35 @@
 # Imports
 #----------------------------------------------------------------------------#
 
-import json
-from types import TracebackType
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
+from flask import (
+    Flask, 
+    render_template, 
+    request, 
+    Response, 
+    flash, 
+    redirect, 
+    url_for
+)
 from flask_moment import Moment
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate, current, show
 import logging
 from logging import Formatter, FileHandler
 from forms import *
+from models import db, Venue, Artist, Shows   
+  
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
 
 app = Flask(__name__)
-moment = Moment(app)
 app.config.from_object('config')
-db = SQLAlchemy(app)
- 
-migrate = Migrate(app,db)
-
-#----------------------------------------------------------------------------#
-# Models.
-#----------------------------------------------------------------------------#
-
-class Shows(db.Model):
-    __tablename__ = 'Shows'
-    __table_args__ = (db.UniqueConstraint('venue_id', 'artist_id','start_time', name='unique_constraint_11'), )
-
-    id = db.Column(db.Integer, primary_key=True,autoincrement=True)
-    venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'),nullable=False)
-    artist_id  = db.Column(db.Integer, db.ForeignKey('Artist.id'),nullable=False)
-    start_time = db.Column(db.DateTime,nullable=False)
-  
-  
-class Venue(db.Model):
-    __tablename__ = 'Venue'
-    __table_args__ = (db.UniqueConstraint('name'),)
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String,nullable=False)
-    city = db.Column(db.String(120)) 
-    state = db.Column(db.String(120))
-    address = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
-    website = db.Column(db.String(120))
-    seeking_talent = db.Column(db.Boolean)
-    seeking_description = db.Column(db.String(240))
-    artists = db.relationship('Artist', secondary = 'Shows') # can use back ref = venues
-
-class Artist(db.Model):
-    __tablename__ = 'Artist'
-    __table_args__ = (db.UniqueConstraint('name'),)
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String,nullable=False)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
-    website = db.Column(db.String(120))
-    seeking_venue = db.Column(db.Boolean)
-    seeking_description = db.Column(db.String(240))
-    venues = db.relationship('Venue', secondary = 'Shows')  # can use back ref = artists
+moment = Moment(app)
+db.init_app(app)
+migrate = Migrate(app, db)
 
 
 #----------------------------------------------------------------------------#
@@ -105,7 +62,7 @@ def index():
 #  ----------------------------------------------------------------
 
 @app.route('/venues')
-def venues():
+def venues_org_ver():
   res_grpby= (db.session.query(Venue.city,Venue.state).group_by(Venue.city,Venue.state)).all()  #group by city,state
   data = [dict(zip(row.keys(), row)) for row in res_grpby]  #convert tuple result to dic 
   
@@ -128,10 +85,40 @@ def venues():
 
   return render_template('pages/venues.html', areas=data)   
 
+@app.route('/venues')
+def venues():
+  locals = []
+  venues = Venue.query.all()
+  places = Venue.query.distinct(Venue.city, Venue.state).all()
+
+  for place in places: #append is an easiest way build structure 
+      locals.append({
+          'city': place.city,
+          'state': place.state,
+          'venues': [{
+              'id': venue.id,
+              'name': venue.name,
+              'num_upcoming_shows': len([show for show in venue.shows if show.start_time > datetime.now()]), #inline 
+              'num_past_shows'    : len([show for show in venue.shows if show.start_time < datetime.now()])
+          } for venue in venues if
+              venue.city == place.city and venue.state == place.state]
+      })
+  return render_template('pages/venues.html', areas=locals)
+
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  res = db.session.query(Venue).filter(Venue.name.contains(request.form['search_term'])).all()
-  response = { "count" : len(res),"data"  : res}
+  #org 
+  # res = db.session.query(Venue).filter(Venue.name.contains(request.form['search_term'])).all()
+  # response = { "count" : len(res),"data"  : res}
+
+  venues = Venue.query.filter(Venue.name.ilike("%" + request.form['search_term'] + "%")).all()
+  response = { "count": len(venues), "data": []}
+  for venue in venues:
+      response["data"].append({
+          'id': venue.id,
+          'name': venue.name, 
+      })
+
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
 @app.route('/venues/<int:venue_id>') 
@@ -185,8 +172,8 @@ def create_venue_submission():
        db.session.close() 
   else :
       flash(form.errors) # validation errror
-  #return render_template('pages/home.html')
-  return redirect(url_for('venues')) # redirect to venus list page
+  return render_template('pages/home.html')
+  #return redirect(url_for('venues')) # redirect to venus list page
 
 @app.route('/venues/<venue_id>', methods=['POST']) 
 def delete_venue(venue_id):
@@ -223,7 +210,7 @@ def edit_venue_submission(venue_id):
   venue.city = request.form['city']
   venue.state = request.form['state']
   venue.address = request.form['address']
-  venue.phone = request.form['phone']
+  venue.phone = request.form['phone'] 
   venue.genres = request.form.getlist('genres')
   venue.facebook_link = request.form['facebook_link']
   db.session.add(venue)
