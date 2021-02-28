@@ -16,13 +16,9 @@ def setup_db(app, database_path=database_path):
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
-    db.init_app(app)
-    db.create_all()
+    db.init_app(app) # init db with app
+    db.create_all() # creates the table if not exists
 
-'''
-Movie
-
-'''
 class Book(db.Model):  
   __tablename__ = 'books'
 
