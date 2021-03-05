@@ -58,12 +58,16 @@ def create_app(test_config=None):
 
 #----------------------------------- --------------------#
 
-  def page_helper(request):
+  def page_helper(request,search=None):
       page = request.args.get('page', 1, type=int) # handler paging , handle UTL arguments
       start = (page - 1) * BOOKS_PER_SHELF
       end = start + BOOKS_PER_SHELF
-      
-      books = Book.query.order_by(Book.id).all()
+
+      if search :
+        books =  Book.query.order_by(Book.id).filter(Book.title.ilike('%{}%'.format(search)))
+      else :
+        books = Book.query.order_by(Book.id).all()   
+
       current_page_books = books[start:end]
       total_books_count = len(books)
       current_page_books_count = len(current_page_books)
@@ -110,28 +114,6 @@ def create_app(test_config=None):
     except:
         abort(400)
 
-  @app.route('/books/',methods=['POST'])
-  def create_book():
-    body = request.get_json()
-    print(body)
-    try :
-      title  = body.get('title',None)
-      author = body.get('author',None)
-      rating = int(body.get('rating',None))
-      
-      book = Book(title,author,rating)
-      book.insert()
-      books = page_helper(request) 
-      #page not refershing ... but with delete and rating it working
-      return jsonify({
-        'success' : True , 
-        'created' : book.id,
-        'books' : books[0],
-        'total_books' : books[1],
-      })
-    except:
-        abort(400)   
-    
   @app.route('/books/<int:book_id>', methods=['DELETE']) 
   def delete_book(book_id):
     try:
@@ -151,6 +133,42 @@ def create_app(test_config=None):
 
     except:
         abort(400)
+    
+  @app.route('/books', methods=['POST'])
+  def create_book():
+      body = request.get_json()
+
+      new_title = body.get('title', None)
+      new_author = body.get('author', None)
+      new_rating = body.get('rating', None)
+      search = body.get('search', None)
+
+      try:
+        if search:
+          current_books = page_helper(request,search)
+
+          return jsonify({
+            'success': True,
+            'books': current_books[0],
+            'total_books':current_books[1]
+          })
+
+        else: 
+          book = Book(title=new_title, author=new_author, rating=new_rating)
+          book.insert()
+
+          #selection = Book.query.order_by(Book.id).all()
+          current_books = page_helper(request)
+
+          return jsonify({
+            'success': True,
+            'created': book.id,
+            'books': current_books[0],
+            'total_books': current_books[1]
+          })
+
+      except:
+        abort(422)
 
   return app
 app = create_app() # create app
