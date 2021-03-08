@@ -12,63 +12,21 @@ def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
   setup_db(app)
-  CORS(app)
-
-  # CORS Headers 
-  @app.after_request
-  def after_request(response):
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    return response
   
-  #Error handlers  
-  @app.errorhandler(400)
-  def bad_reuest(error):
-      return jsonify({
-      'success' : False , 
-      'error' : 400,
-      'message' : 'bad request',
-    }),400
+  '''
+  @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
+  '''
 
-  @app.errorhandler(404)
-  def not_found(error):
-      return jsonify({
-      'success' : False , 
-      'error' : 404,
-      'message' : 'resource(book) not found',
-    }),404
+  '''
+  @TODO: Use the after_request decorator to set Access-Control-Allow
+  '''
 
-  @app.errorhandler(405)
-  def method_not_allowed(error):
-      return jsonify({
-      'success' : False , 
-      'error' : 405,
-      'message' : 'method_not_allowed',
-    }),405
+  '''
+  @TODO: 
+  Create an endpoint to handle GET requests 
+  for all available categories.
+  '''
 
-  @app.errorhandler(422)
-  def unprocessable(error):
-      return jsonify({
-      'success' : False , 
-      'error' : 422,
-      'message' : 'unprocessable',
-    }),422
-
-
-
-#----------------------------------- --------------------#
-
-  @app.route('/')
-  def hello(): 
-    return jsonify( {'message': 'hello flask API' }) 
-
-  @app.route('/categories/') 
-  def get_categories():
-    categories_formated = [category.format() for category in Category.query.order_by(Category.id).all()] 
-    print(len(categories_formated))
-    return jsonify( {'success': True , 
-                    'categories': categories_formated, 
-                    'total_categories' :len(categories_formated)})
 
   '''
   @TODO: 

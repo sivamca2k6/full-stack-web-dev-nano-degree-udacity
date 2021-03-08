@@ -1,7 +1,10 @@
 .vscode
 __pycache__
 env
+/node_modules/
+
 lessons/module2_rest_api/bookshelf_app/frontend/node_modules/
+projects/02_trivia_api/frontend/node_modules/
 
 # OS generated files #
 ######################
