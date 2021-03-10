@@ -12,16 +12,18 @@ def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
   setup_db(app)
-  CORS(app)
 
-  # CORS Headers 
-  @app.after_request
-  def after_request(response):
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    return response
+  CORS(app) 
   
-  #Error handlers  
+  # CORS Headers 
+  @app.after_request 
+  def after_request(response):
+      response.headers.add('Access-Control-Allow-Origin', '*')
+      response.headers.add('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+      response.headers.add('Access-Control-Allow-Methods', 'GET,PATCH,POST,DELETE,OPTIONS')
+      return response
+
+  #Error handlers   
   @app.errorhandler(400)
   def bad_reuest(error):
       return jsonify({
@@ -55,6 +57,23 @@ def create_app(test_config=None):
     }),422
 
 
+  def page_helper(request,search=None):
+      page = request.args.get('page', 1, type=int) # handler paging , handle UTL arguments
+      start = (page - 1) * QUESTIONS_PER_PAGE
+      end = start + QUESTIONS_PER_PAGE
+
+      questions = Question.query.order_by(Question.id).all()   
+
+      current_page_questions = questions[start:end]
+      total_questions_count = len(questions)
+      current_page_questions_count = len(current_page_questions)
+      fomated_paging_questions = [q.format() for q in current_page_questions]
+
+      if current_page_questions_count == 0:
+        abort(404)
+
+      return (fomated_paging_questions,total_questions_count,current_page_questions_count)
+      #return fomated_paging_books
 
 #----------------------------------- --------------------#
 
@@ -62,26 +81,17 @@ def create_app(test_config=None):
   def hello(): 
     return jsonify( {'message': 'hello flask API' }) 
 
-  @app.route('/categories/') 
-  def get_categories():
-    categories_formated = [category.format() for category in Category.query.order_by(Category.id).all()] 
-    print(len(categories_formated))
+  @app.route('/questions/', methods=['GET'])
+  def get_questions():
+    categories_formated = [category.type for category in Category.query.order_by(Category.id).all()] 
+    result = page_helper(request) 
+    print(categories_formated)
     return jsonify( {'success': True , 
+                    'questions': result[0],
+                    'total_questions': result[1], 
                     'categories': categories_formated, 
-                    'total_categories' :len(categories_formated)})
-
-  '''
-  @TODO: 
-  Create an endpoint to handle GET requests for questions, 
-  including pagination (every 10 questions). 
-  This endpoint should return a list of questions, 
-  number of total questions, current category, categories. 
-
-  TEST: At this point, when you start the application
-  you should see questions and categories generated,
-  ten questions per page and pagination at the bottom of the screen for three pages.
-  Clicking on the page numbers should update the questions. 
-  '''
+                    'current_category': categories_formated[0], 
+                    })
 
   '''
   @TODO: 
@@ -135,11 +145,13 @@ def create_app(test_config=None):
   and shown whether they were correct or not. 
   '''
 
-  '''
-  @TODO: 
-  Create error handlers for all expected errors 
-  including 404 and 422. 
-  '''
+  @app.route('/categories/', methods=['GET']) 
+  def get_categories():
+    categories_formated = [category.format() for category in Category.query.order_by(Category.id).all()] 
+    print(len(categories_formated))
+    return jsonify( {'success': True , 
+                    'categories': categories_formated, 
+                    'total_categories' :len(categories_formated)})
   
   return app
 
