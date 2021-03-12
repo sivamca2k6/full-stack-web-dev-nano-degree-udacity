@@ -53,11 +53,17 @@ class Question(db.Model):
   difficulty = Column(Integer)
   category = db.relationship('Category', backref='category', lazy=True)
   
-  def __init__(self, question, answer, category, difficulty):
+  def __init__(self, question, answer, category_id, difficulty):
     self.question = question
     self.answer = answer
-    self.category = category
+    self.category_id = category_id 
     self.difficulty = difficulty
+
+  def get_id_list(category_id=None): 
+    if category_id is None:
+      return [q.id for q in Question.query.order_by(Question.id).all()]
+    else:
+      return [q.id for q in Question.query.filter(Question.category_id == category_id).order_by(Question.id).all()]
 
   def insert(self):
     db.session.add(self)
