@@ -68,13 +68,17 @@ def create_app(test_config=None):
       
       if search :
         questions = Question.query.order_by(Question.id).filter(Question.question.ilike(f'%{search}%')).all()
-        #print(f' {search} - {len(questions)}')
-        # if len(questions) == 0:
-        #   abort(404,f'No questions match with search keyword {search}')
       elif category_id:
         questions = Question.query.filter(Question.category_id == category_id).order_by(Question.id).all()   
       else :
         questions = Question.query.order_by(Question.id).all()   
+
+      #if last page is not exists then move to last page
+      if len(questions) == start:
+        start = len(questions) -  QUESTIONS_PER_PAGE
+        end = start + QUESTIONS_PER_PAGE
+      
+      print(len(questions),start,end,page)
 
       current_page_questions = questions[start:end]
       total_questions_count = len(questions)
@@ -127,14 +131,16 @@ def create_app(test_config=None):
       if body is None:
         abort(404)
 
-      search = body.get('search', None)
+      print(body)
+      
+      search = body.get('searchTerm', None)
       categories_formated = [category.type for category in Category.query.order_by(Category.id).all()] 
 
       new_question = body.get('question', None)
       new_answer = body.get('answer', None)
       new_category = body.get('category', None)
       new_difficulty = body.get('difficulty', None)
-
+      
       #try:
       if search:
         result = page_helper(request,search) 
@@ -155,7 +161,8 @@ def create_app(test_config=None):
         if question_check: #already question exists
           abort(404,f'question - {new_question} is already exists.')
 
-        category = Category.query.filter(Category.type.contains(new_category)).first() # get category id to store at DB
+        
+        category = Category.query.get(int(new_category)+1) # get category id to store at DB
         if category is None:
           abort(404)
         
@@ -178,15 +185,14 @@ def create_app(test_config=None):
 
   @app.route('/categories/', methods=['GET']) 
   def get_categories():
-    categories_formated = [category.format() for category in Category.query.order_by(Category.id).all()] 
-    print(len(categories_formated))
+    categories_formated = [category.type for category in Category.query.order_by(Category.id).all()]  
     return jsonify( {'success': True , 
                     'categories': categories_formated, 
                     'total_categories' :len(categories_formated)})
 
   @app.route('/categories/<int:category_id>/questions/', methods=['GET'])
   def get_question_by_category(category_id):
-
+    category_id = category_id + 1
     category_list =  Category.query.filter(Category.id == category_id).order_by(Category.id).all()
     if len(category_list) == 0:
       abort(404,'Invalid Category id.')
@@ -205,28 +211,37 @@ def create_app(test_config=None):
                     'current_page_questions_count': result[2], 
                     })
 
-  @app.route('/quizz/', methods=['POST']) 
+  @app.route('/quizzes/', methods=['POST']) 
   def get_quizz_random():
     body = request.get_json()
-    category_id =  body.get('category_id', None)
-    prev_question_id =  body.get('prev_question_id', None)
+    quiz_category =  body.get('quiz_category', None)
+    previous_questions =  body.get('previous_questions', None)
+    #print(body) 
+    category_id = int(quiz_category['id']) + 1
+    has_previous_questions =  len(previous_questions) > 0
     
-    if category_id is None and prev_question_id is None:
+    if category_id is None and has_previous_questions == False:
       question_id_list = Question.get_id_list()  
       random_question = Question.query.filter(Question.id == random.choice(question_id_list)).first()
-    elif category_id is not None and prev_question_id is None:
+
+    elif category_id is not None and has_previous_questions == False:
       question_id_list = Question.get_id_list(category_id)
-      random_question = Question.query.filter(Question.id == random.choice(question_id_list)).first()
-    elif category_id is not None and prev_question_id is not None:
-      question_id_list = Question.get_id_list(category_id)
-      question_id_list.remove(prev_question_id)
       random_question = Question.query.filter(Question.id == random.choice(question_id_list)).first()
 
+    elif category_id is not None and has_previous_questions:
+      question_id_list = Question.get_id_list(category_id)
+      question_id_list_filtered = list(set(question_id_list) - set(previous_questions))
+      print(previous_questions,question_id_list,question_id_list_filtered)
+      if(len(question_id_list_filtered) > 0) :
+        random_question = (Question.query.filter(Question.id == random.choice(question_id_list_filtered)).first())
+      else : #if all the questions ran thru then pick any from this category
+        random_question = (Question.query.filter(Question.id == random.choice(question_id_list)).first())           
+    
     return jsonify({
         'success': True, 
-        'random_question': random_question.format(), 
+        'question': random_question.format(), 
         'category_id': random_question.category_id,
-        'question_id': random_question.id
+        'question_id': random_question.id 
       })
   
   return app
