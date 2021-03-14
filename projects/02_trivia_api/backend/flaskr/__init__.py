@@ -48,7 +48,7 @@ def create_app(test_config=None):
       return jsonify({
       'success' : False , 
       'error' : 405,
-      'message' : 'method_not_allowed',
+      'message' : 'method not allowed',
     }),405
 
   @app.errorhandler(422)
@@ -131,7 +131,7 @@ def create_app(test_config=None):
       if body is None:
         abort(404)
 
-      print(body)
+      #print(body)
       
       search = body.get('searchTerm', None)
       categories_formated = [category.type for category in Category.query.order_by(Category.id).all()] 
@@ -157,14 +157,14 @@ def create_app(test_config=None):
         if new_question is None or  new_answer is None or new_category is None or new_difficulty is None: #validations
           abort(404) 
 
-        question_check = Question.query.filter(Question.question.contains(new_question)).first()
-        if question_check: #already question exists
-          abort(404,f'question - {new_question} is already exists.')
-
+        # question_check = Question.query.filter(Question.question.contains(new_question)).first()
+        # if question_check: #already question exists
+        #   abort(404,f'question - {new_question} is already exists.')
         
-        category = Category.query.get(int(new_category)+1) # get category id to store at DB
-        if category is None:
-          abort(404)
+        category = Category.query.get(int(new_category)) # get category id to store at DB
+        #print(new_category,category)
+        if category is None: 
+          abort(404) 
         
         question = Question(question=new_question, answer=new_answer, difficulty=new_difficulty,category_id=category.id)
         question.insert()
@@ -216,10 +216,15 @@ def create_app(test_config=None):
     body = request.get_json()
     quiz_category =  body.get('quiz_category', None)
     previous_questions =  body.get('previous_questions', None)
-    #print(body) 
-    category_id = int(quiz_category['id']) + 1
+
+    print(body) 
+    random_question = None
+    category_id = None
+
+    if quiz_category['type'] != 'click': #all selected
+      category_id = int(quiz_category['id']) + 1
     has_previous_questions =  len(previous_questions) > 0
-    
+
     if category_id is None and has_previous_questions == False:
       question_id_list = Question.get_id_list()  
       random_question = Question.query.filter(Question.id == random.choice(question_id_list)).first()
@@ -235,13 +240,20 @@ def create_app(test_config=None):
       if(len(question_id_list_filtered) > 0) :
         random_question = (Question.query.filter(Question.id == random.choice(question_id_list_filtered)).first())
       else : #if all the questions ran thru then pick any from this category
-        random_question = (Question.query.filter(Question.id == random.choice(question_id_list)).first())           
+        random_question = None
+
+    elif category_id is None and has_previous_questions: # when all category selected
+      question_id_list = Question.get_id_list()
+      question_id_list_filtered = list(set(question_id_list) - set(previous_questions))
+      print(previous_questions,question_id_list,question_id_list_filtered)
+      if(len(question_id_list_filtered) > 0) :
+        random_question = (Question.query.filter(Question.id == random.choice(question_id_list_filtered)).first())
+      else : #if all the questions ran thru then pick any from this category
+        random_question = None
     
     return jsonify({
         'success': True, 
-        'question': random_question.format(), 
-        'category_id': random_question.category_id,
-        'question_id': random_question.id 
+        'question': random_question.format() if random_question else None , 
       })
   
   return app
