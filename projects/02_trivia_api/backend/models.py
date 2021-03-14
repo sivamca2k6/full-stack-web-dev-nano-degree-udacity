@@ -3,6 +3,8 @@ from sqlalchemy import Column, String, Integer, create_engine
 from flask_sqlalchemy import SQLAlchemy
 import json
 
+from werkzeug.exceptions import abort
+
 database_name = "trivia"
 database_path = "postgres://{}:{}@{}/{}".format('caryn', 'caryn','localhost:5432', database_name)
 
@@ -63,7 +65,11 @@ class Question(db.Model):
     if category_id is None:
       return [q.id for q in Question.query.order_by(Question.id).all()]
     else:
-      return [q.id for q in Question.query.filter(Question.category_id == category_id).order_by(Question.id).all()]
+      category_list =  Category.query.filter(Category.id == category_id).order_by(Category.id).all()
+      if len(category_list) == 0:
+        abort(404,'Invalid Category id.')
+
+      return [q.id for q in category_list]
 
   def insert(self):
     db.session.add(self)

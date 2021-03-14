@@ -78,7 +78,7 @@ def create_app(test_config=None):
         start = len(questions) -  QUESTIONS_PER_PAGE
         end = start + QUESTIONS_PER_PAGE
       
-      print(len(questions),start,end,page)
+      #print(len(questions),start,end,page)
 
       current_page_questions = questions[start:end]
       total_questions_count = len(questions)
@@ -214,10 +214,14 @@ def create_app(test_config=None):
   @app.route('/quizzes/', methods=['POST']) 
   def get_quizz_random():
     body = request.get_json()
+
+    if body is None:
+      abort(404,'No json body.')
+
     quiz_category =  body.get('quiz_category', None)
     previous_questions =  body.get('previous_questions', None)
 
-    print(body) 
+    #print(body) 
     random_question = None
     category_id = None
 
