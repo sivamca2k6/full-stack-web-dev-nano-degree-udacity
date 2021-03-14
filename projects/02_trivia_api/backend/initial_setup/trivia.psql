@@ -63,7 +63,7 @@ CREATE TABLE public.questions (
     question text,
     answer text,
     difficulty integer,
-    category integer
+    category_id integer
 );
 
 
@@ -123,7 +123,7 @@ COPY public.categories (id, type) FROM stdin;
 -- Data for Name: questions; Type: TABLE DATA; Schema: public; Owner: caryn
 --
 
-COPY public.questions (id, question, answer, difficulty, category) FROM stdin;
+COPY public.questions (id, question, answer, difficulty, category_id) FROM stdin;
 5	Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?	Maya Angelou	2	4
 9	What boxer's original name is Cassius Clay?	Muhammad Ali	1	4
 2	What movie earned Tom Hanks his third straight Oscar nomination, in 1996?	Apollo 13	4	5
@@ -181,7 +181,7 @@ ALTER TABLE ONLY public.questions
 --
 
 ALTER TABLE ONLY public.questions
-    ADD CONSTRAINT category FOREIGN KEY (category) REFERENCES public.categories(id) ON UPDATE CASCADE ON DELETE SET NULL;
+    ADD CONSTRAINT category FOREIGN KEY (category_id) REFERENCES public.categories(id) ON UPDATE CASCADE ON DELETE SET NULL;
 
 
 --
