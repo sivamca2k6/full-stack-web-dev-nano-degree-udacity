@@ -104,21 +104,40 @@ def verify_decode_jwt(token):
                 'description': 'Unable to find the appropriate key.'
             }, 400)
 
-#decorator which can be reused at multiple endpoints or router
-def requires_auth(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        token = get_token_auth_header() # get token from client
-        try:
-            payload = verify_decode_jwt(token) # decode and create payload if valid
-        except:
-            abort(401)
-        return f(payload, *args, **kwargs)
+def check_permissions(permission, payload):
+    print(payload['permissions'])
+    if 'permissions' not in payload:
+                        raise AuthError({
+                            'code': 'invalid_claims',
+                            'description': 'Permissions not included in JWT.'
+                        }, 400)
 
-    return wrapper
+    if permission not in payload['permissions']:
+        raise AuthError({
+            'code': 'unauthorized',
+            'description': 'Permission not found.'
+        }, 403)
+    return True
+
+#decorator which can be reused at multiple endpoints or router
+def requires_auth(permissiion=''):
+    def requires_auth_dec(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            token = get_token_auth_header() # get token from client
+            try:
+                payload = verify_decode_jwt(token) # decode and create payload if valid
+            except:
+                abort(401)
+            
+            check_permissions(permissiion, payload)
+
+            return f(payload, *args, **kwargs)
+        return wrapper
+    return requires_auth_dec
 
 @app.route('/headers')
-@requires_auth
+@requires_auth('read:data')
 def headers(payload):
     print('hi')
     print(payload)
