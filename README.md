@@ -32,7 +32,7 @@ Implement authentication and authorization in Flask and understand how to design
 Develop an understanding of containerized environments, use Docker to share and store containers, and deploy a Docker container to a Kubernetes cluster using AWS
 
 
-## Project 1 - Design a Venue Booking Database (Completed and Reviewd)
+## Project 1 - Design a Venue Booking Database (Completed and Reviewed)
 you’ll be building out the data models and database for an artist/venue booking application. The fictitious
 startup Fy-yur is building a website that facilitates bookings between artists who can play at venues, and venues who want to book artists.
 
@@ -59,3 +59,22 @@ That's where you come in! Help them finish the trivia app so they can start hold
 5) Play the quiz game, randomizing either all questions or within a specific category. 
 
 Completing this trivia app will give you the ability to structure plan, implement, and test an API - skills essential for enabling your future applications to communicate with others.
+
+## Project 3 - Coffee Shop Full Stack
+
+Udacity has decided to open a new digitally enabled cafe for students to order drinks, socialize, and study hard. But they need help setting up their menu experience.
+
+You have been called on to demonstrate your newly learned skills to create a full stack drink menu application. The application must:
+
+1. Display graphics representing the ratios of ingredients in each drink.
+2. Allow public users to view drink names and graphics.
+3. Allow the shop baristas to see the recipe information.
+4. Allow the shop managers to create new drinks and edit existing drinks.
+
+This project will give you a hands-on chance to practice and demonstrate what you've learned in this lesson, such as:
+
+• Implementing authentication and authorization in Flask
+• Designing against key security principals
+• mplementing role-based control design patterns
+• Securing a REST API
+• Applying software system risk and compliance principles
