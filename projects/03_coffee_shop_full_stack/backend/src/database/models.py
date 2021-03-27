@@ -30,13 +30,28 @@ db_drop_and_create_all()
 '''
 
 
-def db_drop_and_create_all():
+def db_drop_and_create_all_mock_data():
     db.drop_all()
     db.create_all()
     # add one demo row which is helping in POSTMAN test
     drink = Drink(
-        title='water',
-        recipe='[{"name": "water", "color": "blue", "parts": 1}]'
+        title='Espresso',
+        recipe='[{"name": "Espresso", "color": "blue", "parts": 1}]'
+    )
+    drink.insert()
+    drink = Drink(
+        title='Latte',
+        recipe='[{"name": "Latte", "color": "grey", "parts": 2}]'
+    )
+    drink.insert()
+    drink = Drink(
+        title='Americano',
+        recipe='[{"name": "Americano", "color": "green", "parts": 3}]'
+    )
+    drink.insert()
+    drink = Drink(
+        title='Long Black',
+        recipe='[{"name": "Long Black", "color": "black", "parts": 4}]'
     )
     drink.insert()
     
@@ -63,7 +78,7 @@ class Drink(db.Model):
     '''
 
     def short(self):
-        print(json.loads(self.recipe))
+        print(self.recipe)
         short_recipe = [{'color': r['color'], 'parts': r['parts']} for r in json.loads(self.recipe)]
         return {
             'id': self.id,
@@ -77,11 +92,18 @@ class Drink(db.Model):
     '''
 
     def long(self):
-        return {
-            'id': self.id,
-            'title': self.title,
-            'recipe': json.loads(self.recipe)
-        }
+        try:
+            return {
+                'id': self.id,
+                'title': self.title,
+                'recipe': json.loads(self.recipe)
+            }
+        except:
+            return {
+                'id': self.id,
+                'title': self.title,
+                'recipe': self.recipe
+            }
 
     '''
     insert()

@@ -73,7 +73,7 @@ You have been called on to demonstrate your newly learned skills to create a ful
 
 This project will give you a hands-on chance to practice and demonstrate what you've learned in this lesson, such as:
 
-• Implementing authentication and authorization in Flask
+• Implementing authentication and authorization using Auth0 in   Flask
 • Designing against key security principals
 • mplementing role-based control design patterns
 • Securing a REST API
