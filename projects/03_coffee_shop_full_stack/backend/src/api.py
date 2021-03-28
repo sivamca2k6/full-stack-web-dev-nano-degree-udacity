@@ -190,5 +190,12 @@ def unprocessable(error):
         'message': message
         }), 422
 
+@app.errorhandler(AuthError)
+def authentification_failed(AuthError): 
+    return jsonify({
+        "success": False, 
+        "error": AuthError.status_code,
+        "message": "authentification fails."
+        }), 401
 
 
