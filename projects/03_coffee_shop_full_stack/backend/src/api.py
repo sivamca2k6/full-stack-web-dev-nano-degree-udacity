@@ -13,7 +13,7 @@ setup_db(app)
 CORS(app)
 
 #comment below code
-#db_drop_and_create_all_mock_data()
+#db_drop_and_create_all_mock_data() 
 
 
 # ROUTES
@@ -36,20 +36,23 @@ def get_drinks():
      
 
 @app.route("/drinks-detail")
-def get_drinks_detail(): 
+@requires_auth('get:drinks-detail')
+def get_drinks_detail(payload): 
     try:
+        #print(payload)
         drinks = Drink.query.all()
-        drinks_short = [drink.long() for drink in drinks]
+        drinks_long = [drink.long() for drink in drinks]
     except:
         abort(422)
-    return jsonify ({"success": True, "drinks": drinks_short})
+    return jsonify ({"success": True, "drinks": drinks_long})
 
 
 @app.route('/drinks', methods=['POST'])
-def create_drink():
+@requires_auth('post:drinks')
+def create_drink(payload=''):
     body = request.get_json()
     title,recipe = validate_create_update(body)
-    
+    #print(recipe)
     try:
         drink_new = Drink(title=title,recipe=recipe)
         drink_new.insert()
@@ -63,9 +66,10 @@ def create_drink():
 
 
 @app.route('/drinks/<int:id>',methods=['PATCH'])
-def update_drink(id):
+@requires_auth('patch:drinks')
+def update_drink(payload,id):
     body = request.get_json()
-    title,recipe = validate_create_update(body)
+    title,recipe = validate_create_update(body,False)
     
     drink = Drink.query.get(id)
     if drink is None:
@@ -81,7 +85,8 @@ def update_drink(id):
 
 
 @app.route('/drinks/<int:id>', methods=['DELETE'])   
-def delete_drink(id):
+@requires_auth('delete:drinks')
+def delete_drink(payload,id):
     drink = Drink.query.get(id)
     if drink is None:
         abort(404,f"{id} not exists.Please provide valid drink data.")
@@ -98,28 +103,33 @@ def delete_drink(id):
 
 #local functions
 
-def validate_create_update(body):
-#    print(body) 
+def validate_create_update(body,is_create = True):
+    #print(body) 
     if body is None:
         abort(400,"Request body not valid or found.") # bad request since expected header not avail
 
     title = body.get('title',None)
     recipe = body.get('recipe',None)
-    
-    #print(recipe , str(recipe), recipe[0], len(recipe))
-    print(len(Drink.query.all()))
 
     if title is None or recipe is None: 
         abort(400,"Request body data can not not be empty.") 
     if not (all("name" in l for l in recipe)) :
         abort(400,"Request body doest not contain name.") 
-
-    # drink = Drink.query.filter(Drink.title == title)
-    # if drink is not None:
-    #     abort(404,f"{title} already exists.Please provide new title.")
-
+    
+    if title is not None and is_create:
+        drink = Drink.query.filter(Drink.title == title).one_or_none()
+        print(drink)
+        if drink is not None:
+            abort(404,f"{title} already exists.Please provide new title.")
+    
+    recipe = (f'{recipe}').replace("'", '"') # format require for valid json key/value
+    
+    #print(recipe , str(recipe), recipe[0], len(recipe))
     #print(f'{recipe}',"""{}""".format(body['recipe'])) 
-    return (title,f'{recipe}')
+    #print(len(Drink.query.all()))
+
+    
+    return (title,recipe)
 
 # Error Handling
 

@@ -28,8 +28,6 @@ db_drop_and_create_all()
     can be used to initialize a clean database
     !!NOTE you can change the database_filename variable to have multiple verisons of a database
 '''
-
-
 def db_drop_and_create_all_mock_data():
     db.drop_all()
     db.create_all()
@@ -55,7 +53,7 @@ def db_drop_and_create_all_mock_data():
     )
     drink.insert()
     
-# ROUTES
+# ROUTES 
 
 '''
 Drink
@@ -78,7 +76,8 @@ class Drink(db.Model):
     '''
 
     def short(self):
-        print(self.recipe)
+        #self.recipe = self.recipe.replace("'", '"')
+        #print(self.recipe)
         short_recipe = [{'color': r['color'], 'parts': r['parts']} for r in json.loads(self.recipe)]
         return {
             'id': self.id,
