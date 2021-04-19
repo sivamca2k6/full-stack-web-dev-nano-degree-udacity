@@ -1,18 +1,20 @@
 import logging
 import os
 from flask import Flask, request, abort, jsonify
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from models import setup_db,db_refresh_with_mock_data
 
-def create_app(test_config=None):
-  # create and configure the app
+def create_app(test_config=None): # create and configure the app
   app = Flask(__name__)
-  CORS(app)
   app.config.from_object('config')
+  CORS(app)
+  setup_db(app)
   return app
 
 APP = create_app()
 
+#uncomment below func to reset the db with data
+#db_refresh_with_mock_data()
 
 # LOG
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
