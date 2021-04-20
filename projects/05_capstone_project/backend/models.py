@@ -20,6 +20,38 @@ def setup_db(app):
 def db_refresh_with_mock_data():
     db.drop_all()
     db.create_all()
+    
+    movie1 = Movies(title="movie1",release_date='1991/01/01')
+    movie1.insert()
+    movie2 = Movies(title="movie2",release_date='1992/01/01')
+    movie2.insert()
+    movie3 = Movies(title="movie3",release_date='1993/01/01')
+    movie3.insert()
+    movie4 = Movies(title="movie4",release_date='1994/01/01')
+    movie4.insert()
+    movie5 = Movies(title="movie5",release_date='1995/01/01')
+    movie5.insert()
+
+    actor1 = Actors(name="actor1",age=50,gender="Male")
+    actor1.insert()
+    actor2= Actors(name="actor2",age=35,gender="FeMale")
+    actor2.insert()
+    actor3 = Actors(name="actor3",age=40,gender="Male")
+    actor3.insert()
+    actor4 = Actors(name="actor4",age=55,gender="FeMale")
+    actor4.insert()
+    actor5 = Actors(name="actor5",age=60,gender="Male")
+    actor5.insert()
+
+    movieActorDetails  = MovieActorDetails(actor_id=actor1.id,movie_id=movie1.id,role="Hero")
+    movieActorDetails1 = MovieActorDetails(actor_id=actor2.id,movie_id=movie1.id,role="Heroine")
+    movieActorDetails2 = MovieActorDetails(actor_id=actor1.id,movie_id=movie2.id,role="Hero")
+    movieActorDetails3 = MovieActorDetails(actor_id=actor2.id,movie_id=movie2.id,role="Heroine")
+    movieActorDetails4 = MovieActorDetails(actor_id=actor3.id,movie_id=movie2.id,role="Comedian")
+    objs=[movieActorDetails,movieActorDetails1,movieActorDetails2,movieActorDetails3,movieActorDetails4]
+    db.session.bulk_save_objects(objs)
+
+    db.session.commit()
 
 
 class MovieActorDetails(db.Model):
