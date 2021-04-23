@@ -43,36 +43,33 @@ def db_refresh_with_mock_data():
     actor5 = Actors(name="actor5",age=60,gender="Male")
     actor5.insert()
 
-    movieActorDetails  = MovieActorDetails(actor_id=actor1.id,movie_id=movie1.id,role="Hero")
-    movieActorDetails1 = MovieActorDetails(actor_id=actor2.id,movie_id=movie1.id,role="Heroine")
-    movieActorDetails2 = MovieActorDetails(actor_id=actor1.id,movie_id=movie2.id,role="Hero")
-    movieActorDetails3 = MovieActorDetails(actor_id=actor2.id,movie_id=movie2.id,role="Heroine")
-    movieActorDetails4 = MovieActorDetails(actor_id=actor3.id,movie_id=movie2.id,role="Comedian")
-    objs=[movieActorDetails,movieActorDetails1,movieActorDetails2,movieActorDetails3,movieActorDetails4]
-    db.session.bulk_save_objects(objs)
+    movieActorDetails = MovieActorDetails.insert().values(actor_id=actor1.id,movie_id=movie1.id,role="Hero")
+    db.session.execute(movieActorDetails) 
+    movieActorDetails1 = MovieActorDetails.insert().values(actor_id=actor2.id,movie_id=movie1.id,role="Heroine")
+    db.session.execute(movieActorDetails1) 
+    movieActorDetails2 = MovieActorDetails.insert().values(actor_id=actor1.id,movie_id=movie2.id,role="Hero")
+    db.session.execute(movieActorDetails2) 
+    movieActorDetails3 = MovieActorDetails.insert().values(actor_id=actor2.id,movie_id=movie2.id,role="Heroine")
+    db.session.execute(movieActorDetails3) 
+    movieActorDetails4 = MovieActorDetails.insert().values(actor_id=actor3.id,movie_id=movie2.id,role="Comedian")
+    db.session.execute(movieActorDetails4) 
 
     db.session.commit()
 
 
-class MovieActorDetails(db.Model):
-    __tablename__ = 'movieactordetails'
-    __table_args__ = (db.UniqueConstraint('movie_id', 'actor_id', name='unique_constraint_movieactordetails'), )
-
-    id = Column(Integer, primary_key=True,autoincrement=True)
-    actor_id  = Column(Integer, db.ForeignKey('actors.id'),nullable=False)
-    movie_id = Column(Integer, db.ForeignKey('movies.id'),nullable=False)
-    role = Column(String,nullable=False)
-
-    movie = db.relationship('Movies',backref='movie_info',cascade='all, delete') # added cascade to delete when reference data deleted
-    actor = db.relationship('Actors',backref='actor_info',cascade='all, delete')  # added cascade to delete when reference data deleted
-    
+MovieActorDetails = db.Table('MovieActorDetails', db.Model.metadata,
+    db.Column('actor_id', db.Integer, db.ForeignKey('actors.id')), 
+    db.Column('movie_id', db.Integer, db.ForeignKey('movies.id')),
+    db.Column('role', db.String)
+)
+ 
 class Movies(db.Model):
     __tablename__ = 'movies'
 
     id = Column(Integer,primary_key=True,autoincrement=True)
     title = Column(String)
     release_date = Column(DATE,nullable=false)
-    actors = db.relationship('MovieActorDetails', backref=db.backref('Movies'))
+    #actors = db.relationship('Actors', secondary=MovieActorDetails, backref=db.backref('MovieActorDetails', lazy='joined'))
 
     def __init__(self, title, release_date):
         self.title = title
@@ -103,7 +100,7 @@ class Actors(db.Model):
     name = Column(String,nullable=False)
     age = Column(Integer,nullable=False)
     gender = Column(String,nullable=False)
-    movies = db.relationship('MovieActorDetails', backref=db.backref('Actors'))
+    movies = db.relationship('Movies', secondary=MovieActorDetails, backref=db.backref('MovieActorDetails', lazy='joined'))
 
     def __init__(self, name, age,gender):
         self.name = name
