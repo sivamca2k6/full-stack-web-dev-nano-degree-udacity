@@ -4,12 +4,20 @@ from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
 from sqlalchemy.sql.sqltypes import DateTime
 from models import setup_db,db_refresh_with_mock_data,Movies,Actors
+from auth import AuthError, requires_auth
 
 def create_app(test_config=None): # create and configure the app
     app = Flask(__name__)
     app.config.from_object('config')
     CORS(app)
     setup_db(app)
+
+    @app.after_request 
+    def after_request(response):
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PATCH,POST,DELETE,OPTIONS')
+        return response
 
     #uncomment below func to reset the db with data
     db_refresh_with_mock_data()
@@ -44,7 +52,8 @@ def create_app(test_config=None): # create and configure the app
 
     #------------------ GET ---------------------------------------
     @app.route("/movies/")
-    def get_movies():
+    @requires_auth('view:movies')
+    def get_movies(payload):
         try:
             movies = Movies.query.all()
             movies_formated = [movie.format() for movie in movies]
@@ -54,7 +63,8 @@ def create_app(test_config=None): # create and configure the app
         return jsonify ({"success": True, "movies": movies_formated,"count":len(movies_formated)})
     
     @app.route("/actors/")
-    def get_actors():
+    @requires_auth('view:actors')
+    def get_actors(payload):
         try:
             actors = Actors.query.all()
             actors_formated = [actor.format() for actor in actors]
@@ -65,7 +75,8 @@ def create_app(test_config=None): # create and configure the app
 
  #------------------ DELETE ---------------------------------------
     @app.route("/actor/<int:id>/",methods =['DELETE'])
-    def delete_actor(id):
+    @requires_auth('delete:actor')
+    def delete_actor(payload,id):
         #actor = Actors.query.get(id)
         actor = Actors.query.filter(Actors.id == id).one_or_none()
         if actor is None:
@@ -83,7 +94,8 @@ def create_app(test_config=None): # create and configure the app
             abort(422)
 
     @app.route("/movies/<int:id>/",methods =['DELETE'])
-    def delete_movie(id):
+    @requires_auth('delete:movie')
+    def delete_movie(payload,id):
         movie = Movies.query.get(id)
         if movie is None:
             abort(404,f"{id} not exists.Please provide valid actor info.")
@@ -100,7 +112,8 @@ def create_app(test_config=None): # create and configure the app
 
 #------------------ POST ---------------------------------------
     @app.route('/movies/', methods=['POST'])
-    def create_movie():
+    @requires_auth('create:movie')
+    def create_movie(payload=''):
         body = request.get_json()
         title,release_date = movie_validate_create_update(body)
         try:
@@ -113,7 +126,8 @@ def create_app(test_config=None): # create and configure the app
         return jsonify ({"success": True, "movie":  movie_new.format(),"count" : len(Movies.query.all())})
 
     @app.route('/actors/', methods=['POST'])
-    def create_actor():
+    @requires_auth('create:actor')
+    def create_actor(payload=''):
         body = request.get_json()
         name,age,gender = actor_validate_create_update(body)
         try:
@@ -127,7 +141,8 @@ def create_app(test_config=None): # create and configure the app
 
 #------------------ PATCH ---------------------------------------
     @app.route('/actors/<int:id>/', methods=['PATCH'])
-    def update_actor(id):
+    @requires_auth('update:actor')
+    def update_actor(payload,id):
         body = request.get_json()
         name,age,gender = actor_validate_create_update(body,False)
         
@@ -145,7 +160,8 @@ def create_app(test_config=None): # create and configure the app
         return jsonify ({"success": True, "actor": actor.format(),"count" : len(Actors.query.all())})
 
     @app.route('/movies/<int:id>/', methods=['PATCH'])
-    def update_movie(id):
+    @requires_auth('update:movie')
+    def update_movie(payload,id):
         body = request.get_json()
         title,release_date = movie_validate_create_update(body)
         
@@ -161,10 +177,7 @@ def create_app(test_config=None): # create and configure the app
             abort(422)
         return jsonify ({"success": True, "movie": movie.format(),"count" : len(Movies.query.all())})
 
-    if __name__ == '__main__':
-        app.run(host='0.0.0.0', port=8080, debug=True)
-
-#------------------ FUNC ---------------------------------------
+#------------------ LOCAL FUNC ---------------------------------------
 
     def movie_validate_create_update(body,is_create = True):
         #print(body) 
@@ -199,12 +212,11 @@ def create_app(test_config=None): # create and configure the app
         if name is not None and is_create:
             actor = Actors.query.filter(Actors.name == name).one_or_none()
             if actor is not None:
-                abort(404,f"{name} already exists.Please provide new name.")
+                abort(422,f"{name} already exists.Please provide new name.")
         
         return (name,age,gender) 
 
 #------------------ Error Handling ---------------------------------------
-
     @app.errorhandler(400)
     def bad_request(error):
         message = error.description
@@ -217,19 +229,19 @@ def create_app(test_config=None): # create and configure the app
         }), 400
 
     @app.errorhandler(401)
-    def unprocessable(error):
+    def not_authenticated(error):
         return jsonify({
             'success': False,
             'error': 401,
-            'message': 'Unauthorized',
+            'message': 'authentication fails.',
             }), 401
 
     @app.errorhandler(403)
-    def unprocessable(error):
+    def no_valid_permission_authorization(error):
         return jsonify({
             'success': False,
             'error': 403,
-            'message': 'Forbidden',
+            'message': 'Authentication good,dont have valid authorization/permission.',
             }), 403
 
     @app.errorhandler(404)
@@ -262,11 +274,17 @@ def create_app(test_config=None): # create and configure the app
             'message': message
             }), 422
 
-
+    @app.errorhandler(AuthError)
+    def authentification_failed(AuthError): 
         return jsonify({
             "success": False, 
             "error": AuthError.status_code,
-            "message": "authentification fails."
+            "message": "authentication fails."
             }), 401
 
     return app
+
+app = create_app()
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080, debug=True)

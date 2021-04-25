@@ -1,0 +1,735 @@
+{
+	"info": {
+		"_postman_id": "4000253b-4f96-42fc-828f-909fc7be467d",
+		"name": "udacity-fsnd-capstone",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CastingAssitant",
+			"item": [
+				{
+					"name": "Movies",
+					"item": [
+						{
+							"name": "http://127.0.0.1:5000/movies/",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:5000/movies/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"movies",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/movies/1",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:5000/movies/2",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"movies",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/movies/",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": " {\r\n    \"title\": \"movie teste\", \r\n    \"release_date\": \"1991/01/01\"\r\n }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/movies",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"movies"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Actors",
+					"item": [
+						{
+							"name": "http://127.0.0.1:5000/actors/",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:5000/actors/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"actors",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/actor/2",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:5000/actor/2",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"actor",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/actors/1",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n            \"name\": \"actor test1\",\r\n            \"age\": \"44\",\r\n            \"gender\": \"Male\"\r\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/actors/1",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"actors",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/actors/",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n            \"name\": \"actor test1deee\",\r\n            \"age\": \"44\",\r\n            \"gender\": \"Male\"\r\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/actors/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"actors",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkNBVDNyM0s2TE4wY0otbDE0Y0VDQSJ9.eyJpc3MiOiJodHRwczovL3NpdmFtY2EyazYuYXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDYwODRkYWYzMmMwMTVhMDA2OTFhNGNmNiIsImF1ZCI6IlVkYUNhc3RpbmdBUEkiLCJpYXQiOjE2MTkzNTAzMTEsImV4cCI6MTYxOTQzNjcxMSwiYXpwIjoiYm5PUDZrYVZtaXc5YWJDM2RBZHZCRVhra0ZQU1FySzAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbInZpZXc6YWN0b3JzIiwidmlldzptb3ZpZXMiXX0.tg_huFl_zvjhtRDuOQpmeAC11U7wQxD3wcYfG_hfqZpVGPp_vYBvxwilHjZbinN_enDoW3iN4I_7L4iYN7O2XLIaQYx8wWwij0xTm0FMoDoWmjSSGAbti9_wLa60Tv11n7MoBZG9TYSrHVFqMdO-EE53hISyLwbTwCYqmfmO0Muo9VPwnTzI62bc2KLJ9RlJ0Z6NP2OnQ3RahzVV7wF6zVOJbK8KD38CImDTzvFd0DMfXwn3dBW6PcY4ymKY4pJqgE91jldWPSGWvsV6t4jBGjRBxUnRSV802R0UBRVPUvaBNBzIw_Qw5KqeA-rvEHZE5MinGsBCCfUlc8jkZwCkGQ",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Director",
+			"item": [
+				{
+					"name": "Movies",
+					"item": [
+						{
+							"name": "http://127.0.0.1:5000/movies/",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:5000/movies/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"movies",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/movies/1",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:5000/movies/1",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"movies",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/movies/",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": " {\r\n    \"title\": \"movie teste\", \r\n    \"release_date\": \"1991/01/01\"\r\n }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/movies",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"movies"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Actors",
+					"item": [
+						{
+							"name": "http://127.0.0.1:5000/actors/",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:5000/actors/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"actors",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/actor/2",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:5000/actor/2",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"actor",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/actors/1",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n            \"name\": \"actor test1\",\r\n            \"age\": \"44\",\r\n            \"gender\": \"Male\"\r\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/actors/1",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"actors",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/actors/",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n            \"name\": \"actor test1111\",\r\n            \"age\": \"44\",\r\n            \"gender\": \"Male\"\r\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/actors/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"actors",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkNBVDNyM0s2TE4wY0otbDE0Y0VDQSJ9.eyJpc3MiOiJodHRwczovL3NpdmFtY2EyazYuYXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDYwODRlYTFkMDgxYWZmMDA2OTJiMjc0YiIsImF1ZCI6IlVkYUNhc3RpbmdBUEkiLCJpYXQiOjE2MTkzMjQ1MzgsImV4cCI6MTYxOTQxMDkzOCwiYXpwIjoiYm5PUDZrYVZtaXc5YWJDM2RBZHZCRVhra0ZQU1FySzAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImNyZWF0ZTphY3RvciIsImRlbGV0ZTphY3RvciIsInVwZGF0ZTphY3RvciIsInVwZGF0ZTptb3ZpZSIsInZpZXc6YWN0b3JzIiwidmlldzptb3ZpZXMiXX0.vDajWO-n1yhmD6Ymi3FUFZT4yvyPA_X95Bqau6wGJAA7CKYd2wMjOB6x-n1tcIQnL_WdYXqxRPCgLvbxdr7nMLwkTsqMpnFzx6vDtHa7PLMEnVnScGixQA_Xdp9xroPZPM7ANJ7i8Nh4W0GvHzEx3LDwyCefKwHy2iv7Ht2-BgJIxyvxLkRYegkgqn2CG4IE4oSVoKeJ2OixwW8lIFbU5GGk__Dyq-gws2j8WGUQla4-BqheLvYve7O_o99Vr1sLYghin5Ofal34Pjz41j_Qob1D5aSJLNm2d6CarJCZG6lpE_DFIFWeKHyloG54uQahxDDrTT-gzKAa-54b-iahEg",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Producer",
+			"item": [
+				{
+					"name": "Movies",
+					"item": [
+						{
+							"name": "http://127.0.0.1:5000/movies/",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:5000/movies/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"movies",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/movies/1",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:5000/movies/1",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"movies",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/movies/",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": " {\r\n    \"title\": \"movie teste\", \r\n    \"release_date\": \"1991/01/01\"\r\n }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/movies",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"movies"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Actors",
+					"item": [
+						{
+							"name": "http://127.0.0.1:5000/actors/",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:5000/actors/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"actors",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/actor/2",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:5000/actor/2",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"actor",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/actors/1",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n            \"name\": \"actor test1\",\r\n            \"age\": \"44\",\r\n            \"gender\": \"Male\"\r\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/actors/1",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"actors",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "http://127.0.0.1:5000/actors/",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n            \"name\": \"actor test123\",\r\n            \"age\": \"44\",\r\n            \"gender\": \"Male\"\r\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/actors/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"actors",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkNBVDNyM0s2TE4wY0otbDE0Y0VDQSJ9.eyJpc3MiOiJodHRwczovL3NpdmFtY2EyazYuYXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDYwODRmNDNmMTMwNTMyMDA3MGJjMzdkZCIsImF1ZCI6IlVkYUNhc3RpbmdBUEkiLCJpYXQiOjE2MTkzMjYxOTIsImV4cCI6MTYxOTQxMjU5MiwiYXpwIjoiYm5PUDZrYVZtaXc5YWJDM2RBZHZCRVhra0ZQU1FySzAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImNyZWF0ZTphY3RvciIsImNyZWF0ZTptb3ZpZSIsImRlbGV0ZTphY3RvciIsImRlbGV0ZTptb3ZpZSIsInVwZGF0ZTphY3RvciIsInVwZGF0ZTptb3ZpZSIsInZpZXc6YWN0b3JzIiwidmlldzptb3ZpZXMiXX0.CQSqmcae9PcT6obrFHhUzLqAypHBU9KFtQV8sGgFZYGrnZ5DbATD5IpIR3iO9kZL8DnRSquEq0V9yMr5UXkqFR6bCzkBVzjH2q-HdFULR4Cy5uakeNW_Tum_c-KKH9IfSyUtKNuAKpkxwcKNb2yTJ10ep6AjTGhSBcKJg_o2ayipO_sxu4NYEuaSGWSqlfDYiwSVWF5vvUsd9UIFzNCEPG59S0v5QOS-Zaa0b8PKxtA1aPP-60gRIvB4C1t99PT2CEapF79ob7eKOWu5gDKDZ8wix1_mEbR-DyWCtdaU4PmSt3KNZ_iiaPUqZVXVaZjSfrQLW6ygwlOUIABlISTZbg",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkNBVDNyM0s2TE4wY0otbDE0Y0VDQSJ9.eyJpc3MiOiJodHRwczovL3NpdmFtY2EyazYuYXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDYwODRmNDNmMTMwNTMyMDA3MGJjMzdkZCIsImF1ZCI6IlVkYUNhc3RpbmdBUEkiLCJpYXQiOjE2MTkzMjYxOTIsImV4cCI6MTYxOTQxMjU5MiwiYXpwIjoiYm5PUDZrYVZtaXc5YWJDM2RBZHZCRVhra0ZQU1FySzAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImNyZWF0ZTphY3RvciIsImNyZWF0ZTptb3ZpZSIsImRlbGV0ZTphY3RvciIsImRlbGV0ZTptb3ZpZSIsInVwZGF0ZTphY3RvciIsInVwZGF0ZTptb3ZpZSIsInZpZXc6YWN0b3JzIiwidmlldzptb3ZpZXMiXX0.CQSqmcae9PcT6obrFHhUzLqAypHBU9KFtQV8sGgFZYGrnZ5DbATD5IpIR3iO9kZL8DnRSquEq0V9yMr5UXkqFR6bCzkBVzjH2q-HdFULR4Cy5uakeNW_Tum_c-KKH9IfSyUtKNuAKpkxwcKNb2yTJ10ep6AjTGhSBcKJg_o2ayipO_sxu4NYEuaSGWSqlfDYiwSVWF5vvUsd9UIFzNCEPG59S0v5QOS-Zaa0b8PKxtA1aPP-60gRIvB4C1t99PT2CEapF79ob7eKOWu5gDKDZ8wix1_mEbR-DyWCtdaU4PmSt3KNZ_iiaPUqZVXVaZjSfrQLW6ygwlOUIABlISTZbg",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

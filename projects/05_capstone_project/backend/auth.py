@@ -5,9 +5,21 @@ from jose import jwt
 from urllib.request import urlopen
 
 
-AUTH0_DOMAIN = 'sivamca2k6.au.auth0.com'
-ALGORITHMS = ['RS256']
-API_AUDIENCE = 'UdaCoffeAPI'
+#-------------- Auth0 Config----------------
+class AuthConfig:
+    AUTH0_DOMAIN = 'sivamca2k6.au.auth0.com'
+    ALGORITHMS = ['RS256']
+    API_AUDIENCE = 'UdaCastingAPI' 
+
+    casting_agency_assistant_token = {
+    'Authorization': "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkNBVDNyM0s2TE4wY0otbDE0Y0VDQSJ9.eyJpc3MiOiJodHRwczovL3NpdmFtY2EyazYuYXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDYwODRkYWYzMmMwMTVhMDA2OTFhNGNmNiIsImF1ZCI6IlVkYUNhc3RpbmdBUEkiLCJpYXQiOjE2MTkzNTAzMTEsImV4cCI6MTYxOTQzNjcxMSwiYXpwIjoiYm5PUDZrYVZtaXc5YWJDM2RBZHZCRVhra0ZQU1FySzAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbInZpZXc6YWN0b3JzIiwidmlldzptb3ZpZXMiXX0.tg_huFl_zvjhtRDuOQpmeAC11U7wQxD3wcYfG_hfqZpVGPp_vYBvxwilHjZbinN_enDoW3iN4I_7L4iYN7O2XLIaQYx8wWwij0xTm0FMoDoWmjSSGAbti9_wLa60Tv11n7MoBZG9TYSrHVFqMdO-EE53hISyLwbTwCYqmfmO0Muo9VPwnTzI62bc2KLJ9RlJ0Z6NP2OnQ3RahzVV7wF6zVOJbK8KD38CImDTzvFd0DMfXwn3dBW6PcY4ymKY4pJqgE91jldWPSGWvsV6t4jBGjRBxUnRSV802R0UBRVPUvaBNBzIw_Qw5KqeA-rvEHZE5MinGsBCCfUlc8jkZwCkGQ"}
+
+    casting_agency_director_token = {
+    'Authorization': "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkNBVDNyM0s2TE4wY0otbDE0Y0VDQSJ9.eyJpc3MiOiJodHRwczovL3NpdmFtY2EyazYuYXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDYwODRlYTFkMDgxYWZmMDA2OTJiMjc0YiIsImF1ZCI6IlVkYUNhc3RpbmdBUEkiLCJpYXQiOjE2MTkzMjQ1MzgsImV4cCI6MTYxOTQxMDkzOCwiYXpwIjoiYm5PUDZrYVZtaXc5YWJDM2RBZHZCRVhra0ZQU1FySzAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImNyZWF0ZTphY3RvciIsImRlbGV0ZTphY3RvciIsInVwZGF0ZTphY3RvciIsInVwZGF0ZTptb3ZpZSIsInZpZXc6YWN0b3JzIiwidmlldzptb3ZpZXMiXX0.vDajWO-n1yhmD6Ymi3FUFZT4yvyPA_X95Bqau6wGJAA7CKYd2wMjOB6x-n1tcIQnL_WdYXqxRPCgLvbxdr7nMLwkTsqMpnFzx6vDtHa7PLMEnVnScGixQA_Xdp9xroPZPM7ANJ7i8Nh4W0GvHzEx3LDwyCefKwHy2iv7Ht2-BgJIxyvxLkRYegkgqn2CG4IE4oSVoKeJ2OixwW8lIFbU5GGk__Dyq-gws2j8WGUQla4-BqheLvYve7O_o99Vr1sLYghin5Ofal34Pjz41j_Qob1D5aSJLNm2d6CarJCZG6lpE_DFIFWeKHyloG54uQahxDDrTT-gzKAa-54b-iahEg"}
+
+    casting_agency_producer_token = {
+    'Authorization': "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkNBVDNyM0s2TE4wY0otbDE0Y0VDQSJ9.eyJpc3MiOiJodHRwczovL3NpdmFtY2EyazYuYXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDYwODRmNDNmMTMwNTMyMDA3MGJjMzdkZCIsImF1ZCI6IlVkYUNhc3RpbmdBUEkiLCJpYXQiOjE2MTkzMjYxOTIsImV4cCI6MTYxOTQxMjU5MiwiYXpwIjoiYm5PUDZrYVZtaXc5YWJDM2RBZHZCRVhra0ZQU1FySzAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImNyZWF0ZTphY3RvciIsImNyZWF0ZTptb3ZpZSIsImRlbGV0ZTphY3RvciIsImRlbGV0ZTptb3ZpZSIsInVwZGF0ZTphY3RvciIsInVwZGF0ZTptb3ZpZSIsInZpZXc6YWN0b3JzIiwidmlldzptb3ZpZXMiXX0.CQSqmcae9PcT6obrFHhUzLqAypHBU9KFtQV8sGgFZYGrnZ5DbATD5IpIR3iO9kZL8DnRSquEq0V9yMr5UXkqFR6bCzkBVzjH2q-HdFULR4Cy5uakeNW_Tum_c-KKH9IfSyUtKNuAKpkxwcKNb2yTJ10ep6AjTGhSBcKJg_o2ayipO_sxu4NYEuaSGWSqlfDYiwSVWF5vvUsd9UIFzNCEPG59S0v5QOS-Zaa0b8PKxtA1aPP-60gRIvB4C1t99PT2CEapF79ob7eKOWu5gDKDZ8wix1_mEbR-DyWCtdaU4PmSt3KNZ_iiaPUqZVXVaZjSfrQLW6ygwlOUIABlISTZbg"}
+
 
 ## AuthError Exception
 '''
@@ -69,7 +81,7 @@ def get_token_auth_header():
 def verify_decode_jwt(token):
     
     # To verify , gets token from auth0 server to validate aganist client one
-    jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json') 
+    jsonurl = urlopen(f'https://{AuthConfig.AUTH0_DOMAIN}/.well-known/jwks.json') 
     jwks = json.loads(jsonurl.read())
 
     #kid from client call
@@ -98,9 +110,9 @@ def verify_decode_jwt(token):
             payload = jwt.decode(
                 token,
                 rsa_key,
-                algorithms=ALGORITHMS,
-                audience=API_AUDIENCE,
-                issuer='https://' + AUTH0_DOMAIN + '/'
+                algorithms=AuthConfig.ALGORITHMS,
+                audience=AuthConfig.API_AUDIENCE,
+                issuer='https://' + AuthConfig.AUTH0_DOMAIN + '/'
             )
             #print(payload)
             return payload
@@ -128,7 +140,7 @@ def verify_decode_jwt(token):
 
 '''
     @INPUTS
-        permission: string permission (i.e. 'post:drink')
+        permission: string permission
         payload: decoded jwt payload
     =>Note : RBAC settings in Auth0 need to be enabled.
 '''
@@ -152,7 +164,7 @@ def check_permissions(permission, payload):
 
 '''
     this decorator can be reused at multiple API endpoints
-    @INPUTS => permission: string permission (i.e. 'post:drink')
+    @INPUTS => permission: string permission 
     return the decorator which passes the decoded payload to the decorated method
 '''
 def requires_auth(permission=''):
