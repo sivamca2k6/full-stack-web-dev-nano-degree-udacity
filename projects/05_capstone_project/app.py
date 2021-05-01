@@ -49,6 +49,15 @@ def create_app(test_config=None): # create and configure the app
     @app.route('/')
     def hello_world():
         return 'Hello, Udacity Full Stack - Final Capstone Project!\n'
+    
+    @app.route('/heroku') # to test db accesss without auth
+    def hello_heroku():
+        try:
+            movies = Movies.query.all()
+            movies_formated = [movie.format() for movie in movies]
+        except Exception as e:
+            abort(422)
+        return jsonify ({"success": True, "movies": movies_formated,"count":len(movies_formated)})
 
     #------------------ GET ---------------------------------------
     @app.route("/movies/")
@@ -98,7 +107,7 @@ def create_app(test_config=None): # create and configure the app
     def delete_movie(payload,id):
         movie = Movies.query.get(id)
         if movie is None:
-            abort(404,f"{id} not exists.Please provide valid actor info.")
+            abort(404,f"{id} not exists.Please provide valid movie info.")
 
         try:  
             movie.delete()
@@ -212,7 +221,7 @@ def create_app(test_config=None): # create and configure the app
         if name is not None and is_create:
             actor = Actors.query.filter(Actors.name == name).one_or_none()
             if actor is not None:
-                abort(422,f"{name} already exists.Please provide new name.")
+                abort(404,f"{name} already exists.Please provide new name.")
         
         return (name,age,gender) 
 

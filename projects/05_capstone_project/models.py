@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from sqlalchemy.sql.expression import false
 from sqlalchemy.sql.schema import Column
 from sqlalchemy.sql.sqltypes import DATE, DateTime, Integer, SMALLINT, SmallInteger, String
+import os 
 
 db = SQLAlchemy()
 
@@ -12,6 +13,8 @@ setup_db(app)
     binds a flask application and a SQLAlchemy service
 '''
 def setup_db(app):
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL','postgresql://postgres:admin@localhost:5432/UdaCastingCompanyDB')
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)
     migrate = Migrate(app, db)

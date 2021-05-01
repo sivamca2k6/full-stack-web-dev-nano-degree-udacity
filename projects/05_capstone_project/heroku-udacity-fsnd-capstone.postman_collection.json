@@ -1,0 +1,705 @@
+{
+	"info": {
+		"_postman_id": "9574cadc-913c-4954-a73c-5d184f3d09bd",
+		"name": "heroku-udacity-fsnd-capstone",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CastingAssitant",
+			"item": [
+				{
+					"name": "Movies",
+					"item": [
+						{
+							"name": "https://udacasting-agency.herokuapp.com/movies/",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/movies/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"movies",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/movies/1",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/movies/2/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"movies",
+										"2",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/movies/",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": " {\r\n    \"title\": \"movie teste\", \r\n    \"release_date\": \"1991/01/01\"\r\n }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/movies/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"movies",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Actors",
+					"item": [
+						{
+							"name": "https://udacasting-agency.herokuapp.com/actors/",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/actors/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"actors",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/actor/2",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/actor/2/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"actor",
+										"2",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/actors/1",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n            \"name\": \"actor test1\",\r\n            \"age\": \"44\",\r\n            \"gender\": \"Male\"\r\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/actors/1/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"actors",
+										"1",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/actors/",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n            \"name\": \"actor test1deee\",\r\n            \"age\": \"44\",\r\n            \"gender\": \"Male\"\r\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/actors/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"actors",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkNBVDNyM0s2TE4wY0otbDE0Y0VDQSJ9.eyJpc3MiOiJodHRwczovL3NpdmFtY2EyazYuYXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDYwODRkYWYzMmMwMTVhMDA2OTFhNGNmNiIsImF1ZCI6IlVkYUNhc3RpbmdBUEkiLCJpYXQiOjE2MTk4NzUyOTksImV4cCI6MTYxOTk2MTY5OSwiYXpwIjoiYm5PUDZrYVZtaXc5YWJDM2RBZHZCRVhra0ZQU1FySzAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbInZpZXc6YWN0b3JzIiwidmlldzptb3ZpZXMiXX0.6UA1U7qi73xb2YI8WEUtCsOKQKX0iV1BD7iTo5KUQNYSnK6Wy3LwF_mfOjEGRHUHxe2UWazUEDIYHEGX1YoTlbaBorIaQX9AEs1EXVNCAXD3GOvQBuVW1EewZ4jAAFOO0fxQdksU8D_9PlcuVpSYwzhtfcrLwWBsSNqZL18Ijb5rM1dMyhvVt4QWfyvEt4zRtCWdWQc-TSDxqCsbXCdLFdVFpf6VEHmljwuDLGVjppygQaz5xf7JJuBXKH6rWOEzsw3BsEFI4oiR8-sx5aywE9FzdWhx2NXhY3rFH6B-5FpK2_6Dbeap7X2QzPpmKdfdvL-4lfcTrz20dpzRZZAvAw",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Director",
+			"item": [
+				{
+					"name": "Movies",
+					"item": [
+						{
+							"name": "https://udacasting-agency.herokuapp.com/movies/",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/movies/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"movies",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/movies/1",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/movies/1/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"movies",
+										"1",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/movies/",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": " {\r\n    \"title\": \"movie teste\", \r\n    \"release_date\": \"1991/01/01\"\r\n }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/movies/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"movies",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Actors",
+					"item": [
+						{
+							"name": "https://udacasting-agency.herokuapp.com/actors/",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/actors/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"actors",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/actor/2",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/actor/2/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"actor",
+										"2",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/actors/1",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n            \"name\": \"actor test1\",\r\n            \"age\": \"44\",\r\n            \"gender\": \"Male\"\r\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/actors/1/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"actors",
+										"1",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/actors/",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n            \"name\": \"actor test1111\",\r\n            \"age\": \"44\",\r\n            \"gender\": \"Male\"\r\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/actors/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"actors",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkNBVDNyM0s2TE4wY0otbDE0Y0VDQSJ9.eyJpc3MiOiJodHRwczovL3NpdmFtY2EyazYuYXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDYwODRlYTFkMDgxYWZmMDA2OTJiMjc0YiIsImF1ZCI6IlVkYUNhc3RpbmdBUEkiLCJpYXQiOjE2MTk4NzU3MTksImV4cCI6MTYxOTk2MjExOSwiYXpwIjoiYm5PUDZrYVZtaXc5YWJDM2RBZHZCRVhra0ZQU1FySzAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImNyZWF0ZTphY3RvciIsImRlbGV0ZTphY3RvciIsInVwZGF0ZTphY3RvciIsInVwZGF0ZTptb3ZpZSIsInZpZXc6YWN0b3JzIiwidmlldzptb3ZpZXMiXX0.vfGlz057n4W1MVe9dKJKHOVIPhvbpu_86-3T7Lposbv1w6Iw859qvJub9hscuzX6uGHKIzA1uXKAG1Wc-EE-WfXtaLdGrdFYEJyr-0YrnM79b4CAU1cUgsrpjiChUrYbSLxRV-JUAnBuD1b7k8vEsfqopGR0159jk9J2gMZVhRRYEga3oEUlVarGswmwevNUFidLq9wH-4f3uGrhWgc8pvBg4UkudmZvqpCrY8Hu753t6rqmG04QckT1Wd3dbvblhU6Vqwz5uPjPP54fpCA61RfdifNrVZ4ec_HF21tPoYUNN7jvGN2_TSGyxomMBds_iRCZVrHMQvnVhpcbkPmLJA",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Producer",
+			"item": [
+				{
+					"name": "Movies",
+					"item": [
+						{
+							"name": "https://udacasting-agency.herokuapp.com/movies/",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/movies/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"movies",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/movies/1",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/movies/1/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"movies",
+										"1",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/movies/",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": " {\r\n    \"title\": \"movie teste\", \r\n    \"release_date\": \"1991/01/01\"\r\n }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/movies/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"movies",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Actors",
+					"item": [
+						{
+							"name": "https://udacasting-agency.herokuapp.com/actors/",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/actors/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"actors",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/actors/",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n            \"name\": \"actor test123\",\r\n            \"age\": \"44\",\r\n            \"gender\": \"Male\"\r\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/actors/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"actors",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/actors/1",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n            \"name\": \"actor test1\",\r\n            \"age\": \"44\",\r\n            \"gender\": \"Male\"\r\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/actors/1/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"actors",
+										"1",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "https://udacasting-agency.herokuapp.com/actor/2",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://udacasting-agency.herokuapp.com/actor/5/",
+									"protocol": "https",
+									"host": [
+										"udacasting-agency",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"actor",
+										"5",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkNBVDNyM0s2TE4wY0otbDE0Y0VDQSJ9.eyJpc3MiOiJodHRwczovL3NpdmFtY2EyazYuYXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDYwODRmNDNmMTMwNTMyMDA3MGJjMzdkZCIsImF1ZCI6IlVkYUNhc3RpbmdBUEkiLCJpYXQiOjE2MTk4NzU4ODcsImV4cCI6MTYxOTk2MjI4NywiYXpwIjoiYm5PUDZrYVZtaXc5YWJDM2RBZHZCRVhra0ZQU1FySzAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImNyZWF0ZTphY3RvciIsImNyZWF0ZTptb3ZpZSIsImRlbGV0ZTphY3RvciIsImRlbGV0ZTptb3ZpZSIsInVwZGF0ZTphY3RvciIsInVwZGF0ZTptb3ZpZSIsInZpZXc6YWN0b3JzIiwidmlldzptb3ZpZXMiXX0.oVHa5uClA1fvImdh-TSdphI5WfQl9vom4hcl-mU0bw36sP8nVDM9XWBl98u0CVEi23sHD31x3jp_hmqZuz-3cf-wmA4kwtjldEhOiKwukxDHLMGwH-z3sp_kVnJ8C5cNWSZUZ90tZ_3u1MAMZpyH509Oaa8q0zNfVRpmHKt_cDkBVEvCfnfJbQOZz_qj1b9Q91GDBvDfsBvRmMP1hBDIfdTHm6dCyyxDIrUPK6lNFzbRpoxHnhNb5OpZdvesMMs-EadUf0Dhu4K_fPwcnHQ6VU7d8Ofm01C1fNa89VvwikUfdhdsDuPs3k7dvbjZE0LqGxr6ePsC2tD5wliRMpGfRQ",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkNBVDNyM0s2TE4wY0otbDE0Y0VDQSJ9.eyJpc3MiOiJodHRwczovL3NpdmFtY2EyazYuYXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDYwODRmNDNmMTMwNTMyMDA3MGJjMzdkZCIsImF1ZCI6IlVkYUNhc3RpbmdBUEkiLCJpYXQiOjE2MTkzMjYxOTIsImV4cCI6MTYxOTQxMjU5MiwiYXpwIjoiYm5PUDZrYVZtaXc5YWJDM2RBZHZCRVhra0ZQU1FySzAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImNyZWF0ZTphY3RvciIsImNyZWF0ZTptb3ZpZSIsImRlbGV0ZTphY3RvciIsImRlbGV0ZTptb3ZpZSIsInVwZGF0ZTphY3RvciIsInVwZGF0ZTptb3ZpZSIsInZpZXc6YWN0b3JzIiwidmlldzptb3ZpZXMiXX0.CQSqmcae9PcT6obrFHhUzLqAypHBU9KFtQV8sGgFZYGrnZ5DbATD5IpIR3iO9kZL8DnRSquEq0V9yMr5UXkqFR6bCzkBVzjH2q-HdFULR4Cy5uakeNW_Tum_c-KKH9IfSyUtKNuAKpkxwcKNb2yTJ10ep6AjTGhSBcKJg_o2ayipO_sxu4NYEuaSGWSqlfDYiwSVWF5vvUsd9UIFzNCEPG59S0v5QOS-Zaa0b8PKxtA1aPP-60gRIvB4C1t99PT2CEapF79ob7eKOWu5gDKDZ8wix1_mEbR-DyWCtdaU4PmSt3KNZ_iiaPUqZVXVaZjSfrQLW6ygwlOUIABlISTZbg",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
