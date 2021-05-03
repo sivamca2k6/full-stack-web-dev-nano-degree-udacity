@@ -1,8 +1,19 @@
 # Udacity Nano Degree - Full Stack Web Developer 
 
-## Skills
+Tech Stack
 
-Python,Flask,PostgresSQL,REST API,Docker
+* **VS Code** as IDE.
+ * **virtualenv** to create isolated Python environments.
+ * **Python3** and **Flask** as our server language and server framework.
+ * **PostgreSQL** as our database of choice.
+ * **SQLAlchemy ORM** as ORM library and data modeling.
+ * **REST API** using Flask.
+ * **Pytest** as our unit test with TDD.
+ * **Flask-Migrate** for creating and running schema migrations.
+ * **Auth0 RBAC JWT** for third party authentication integration.
+ * **Docker Kuebernetes AWS EKS** for creating and deploying containers at cloud.
+ * **Heroku** for Easier Cloud Deployment
+ * **GIT** for source version control.
 
 ## Overview
 
@@ -32,7 +43,7 @@ Implement authentication and authorization in Flask and understand how to design
 Develop an understanding of containerized environments, use Docker to share and store containers, and deploy a Docker container to a Kubernetes cluster using AWS
 
 
-## Project 1 - Design a Venue Booking Database (Completed and Reviewed)
+## Project 1 - Design a Venue Booking Database 
 you’ll be building out the data models and database for an artist/venue booking application. The fictitious
 startup Fy-yur is building a website that facilitates bookings between artists who can play at venues, and venues who want to book artists.
 
@@ -78,3 +89,65 @@ This project will give you a hands-on chance to practice and demonstrate what yo
 • mplementing role-based control design patterns
 • Securing a REST API
 • Applying software system risk and compliance principles
+
+## Project 4 - Deploying a Flask API Container to Kubernetes using AWS EKS
+
+In this project you will containerize and deploy a Flask API to a Kubernetes cluster using Docker, AWS EKS, CodePipeline, and CodeBuild.
+
+The Flask app that will be used for this project consists of a simple API with three endpoints:
+
+- `GET '/'`: This is a simple health check, which returns the response 'Healthy'. 
+- `POST '/auth'`: This takes a email and password as json arguments and returns a JWT based on a custom secret.
+- `GET '/contents'`: This requires a valid JWT, and returns the un-encrpyted contents of that token. 
+
+The app relies on a secret set as the environment variable `JWT_SECRET` to produce a JWT. The built-in Flask server is adequate for local development, but not production, so you will be using the production-ready [Gunicorn](https://gunicorn.org/) server when deploying the app.
+
+Completing the project involves several steps:
+
+1. Write a Dockerfile for a simple Flask API
+2. Build and test the container locally
+3. Create an EKS cluster
+4. Store a secret using AWS Parameter Store
+5. Create a CodePipeline pipeline triggered by GitHub checkins
+6. Create a CodeBuild stage which will build, test, and deploy your code
+
+## Project 5 Capstone - Casting Agency Management App
+
+The Casting Agency models a company that is responsible for creating movies and managing and assigning actors to those movies. You are an Executive Producer within the company and are creating a system to simplify and streamline your process. 
+
+#### Data Models: 
+* Movies with attributes title and release date 
+* Actors with attributes name, age and gender 
+#### Endpoints : 
+* GET /actors and /movies 
+* DELETE /actors/ and /movies/ 
+* POST /actors and /movies and 
+* PATCH /actors/ and /movies/ 
+#### Roles: 
+* Casting Assistant 
+    - Can view actors and movies 
+* Casting Director 
+    - All permissions a Casting Assistant has and… 
+    - Add or delete an actor from the database 
+    - Modify actors or movies 
+* Executive Producer 
+    - All permissions a Casting Director has and… 
+    - Add or delete a movie from the database 
+#### Unit Tests: 
+* One test for success behavior of each endpoint 
+* One test for error behavior of each endpoint 
+* At least two tests of RBAC for each role 
+
+#### Auth0 - Third Party Auth integration :
+
+1. Create a new Auth0 Account
+2. Select a unique tenant domain
+3. Create a new, single page web application
+4. Create a new API
+   - in API Settings:
+     - Enable RBAC
+     - Enable Add Permissions in the Access Token
+5. Create new API permissions:
+6. Create new roles for:
+
+

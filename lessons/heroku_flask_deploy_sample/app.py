@@ -12,7 +12,7 @@ def create_app(test_config=None):
     @app.route('/')
     def get_greeting():
         excited = os.environ.get('EXCITED','false')
-        greeting = "Hello" 
+        greeting = "Hello Heroku" 
         if excited == 'true': greeting = greeting + "!!!!!"
         return greeting
 
@@ -24,5 +24,5 @@ def create_app(test_config=None):
 
 app = create_app()
 
-if __name__ == '__main__':
+if __name__ == '__main__': 
     app.run()
